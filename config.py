@@ -1,0 +1,1 @@
+TIKTOK_SELLER_URL = "https://seller-uk.tiktok.com/"
