@@ -1,4 +1,7 @@
 from playwright.sync_api import sync_playwright
+from config import HEADLESS
+
+
 
 
 class BrowserManager:
@@ -9,7 +12,7 @@ class BrowserManager:
 
         self.browser = self.playwright.chromium.launch_persistent_context(
             user_data_dir="sessions/tiktok",
-            headless= False 
+            headless=HEADLESS
         )
 
 

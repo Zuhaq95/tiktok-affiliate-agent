@@ -1,3 +1,4 @@
+from config import DEBUG
 class Navigator:
 
     def __init__(self, page):
@@ -23,6 +24,6 @@ class Navigator:
 
         input("STEP 2 - Did the page actually change? Press ENTER...")
 
-        if debug:
+        if DEBUG:
             print("🐞 Opening Playwright Inspector...")
             self.page.pause()
