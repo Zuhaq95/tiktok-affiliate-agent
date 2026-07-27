@@ -1,7 +1,11 @@
+from re import search
+
 from browser_manager import BrowserManager
+import campaign
 from navigator import Navigator
 from campaign import Campaign
 from discovery_panel import DiscoveryPanel
+from creator_search import CreatorSearch
 
 
 def main():
@@ -30,6 +34,8 @@ def main():
         panel = DiscoveryPanel(page)
         panel.apply_product_category(campaign)
 
+        search = CreatorSearch(page)
+        search.search(campaign.keyword)
         # Next milestone
         # search = CreatorSearch(page)
         # search.search(campaign.keyword)
