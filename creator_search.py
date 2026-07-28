@@ -27,4 +27,6 @@ class CreatorSearch:
 
         self.page.wait_for_load_state("networkidle")
 
+        self.page.locator("body").click(position={"x":5,"y":5})
+
         print("✓ Search completed")
