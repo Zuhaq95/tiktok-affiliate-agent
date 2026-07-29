@@ -1,8 +1,4 @@
-from csv import reader
-from re import search
-
 from browser_manager import BrowserManager
-import campaign
 from navigator import Navigator
 from campaign import Campaign
 from discovery_panel import DiscoveryPanel
@@ -25,26 +21,38 @@ def main():
     )
 
     print(campaign)
-# open browser and start a new page
+
     browser = BrowserManager()
     page = browser.start()
 
     try:
-    # open the affiliate portal and navigate to the Discover Creators page
+
         navigator = Navigator(page)
         navigator.open_discover_creators()
-    # apply the product category filter, search for creators, and read the results
+
         panel = DiscoveryPanel(page)
         panel.apply_product_category(campaign)
-    # search for creators using the specified keyword from the campaign in Main.py
+
         search = CreatorSearch(page)
         search.search(campaign.keyword)
-    # read the creators  on the page and print the results
+
+        # Optional
+        # Uncomment only when debugging
+        #
+        # page.pause()
+
         extractor = CreatorExtractor(page)
         creators = extractor.extract_visible_creators()
-        print(creators)
 
-        input("Press ENTER to close...")
+        print("\n")
+        print("=" * 80)
+        print(f"Extracted {len(creators)} creators")
+        print("=" * 80)
+
+        for creator in creators:
+            print(creator)
+
+        input("\nPress ENTER to close...")
 
     finally:
         browser.stop()

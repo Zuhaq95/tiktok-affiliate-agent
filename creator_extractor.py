@@ -1,39 +1,58 @@
-from creator import Creator
+from creator_parser import CreatorParser
 
 
 class CreatorExtractor:
 
     def __init__(self, page):
         self.page = page
+        self.parser = CreatorParser()
 
     def extract_visible_creators(self):
 
+        print("\nExtracting visible creators...")
+
+        tbodies = self.page.locator("tbody")
+
+        tbody_count = tbodies.count()
+
+        print(f"TBodies found: {tbody_count}")
+
         creators = []
 
-        #invite_buttons = self.page.get_by_role("button", name="Invite")
+        for tbody_index in range(tbody_count):
 
-        #count = invite_buttons.count()
+            tbody = tbodies.nth(tbody_index)
 
-        #print(f"Found {count} visible creators")
-        rows = self.page.locator("tbody tr")
+            rows = tbody.locator("tr")
 
-        count = rows.count()
+            row_count = rows.count()
 
-        print(f"Found {count} creator rows")
+            print(f"TBody {tbody_index}: {row_count} rows")
 
-        
-        for i in range(count):
-            row = rows.nth(i)
+            # Ignore empty tbodies
+            if row_count == 0:
+                continue
 
-            creator = self.extract_creator(row)
+            # Ignore tiny tables (filters, summaries, etc.)
+            if row_count < 3:
+                continue
 
-            creators.append(creator)
+            print(f"\nUsing tbody {tbody_index}")
+
+            for row_index in range(row_count):
+
+                try:
+                    row = rows.nth(row_index)
+
+                    creator = self.parser.parse(row)
+
+                    creators.append(creator)
+
+                except Exception as ex:
+                    print(f"Row {row_index + 1} failed: {ex}")
+
+            break
+
+        print(f"\nSuccessfully extracted {len(creators)} creators.\n")
+
         return creators
-
-    def extract_creator(self, row):
-
-        creator = Creator()
-
-        # We'll fill this method next
-
-        return creator
