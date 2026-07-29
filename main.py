@@ -1,9 +1,10 @@
 from browser_manager import BrowserManager
 from navigator import Navigator
-from campaign import Campaign
 from discovery_panel import DiscoveryPanel
 from creator_search import CreatorSearch
 from creator_extractor import CreatorExtractor
+from csv_exporter import CsvExporter
+from campaign import Campaign
 
 
 def main():
@@ -17,12 +18,13 @@ def main():
         creator_gmv="£10K+",
         avg_commission="Less than 10%",
         content_type="Video",
-        not_invited=True
+        not_invited=True,
     )
 
     print(campaign)
 
     browser = BrowserManager()
+
     page = browser.start()
 
     try:
@@ -30,32 +32,44 @@ def main():
         navigator = Navigator(page)
         navigator.open_discover_creators()
 
-        panel = DiscoveryPanel(page)
-        panel.apply_product_category(campaign)
+        
+        discovery_panel = DiscoveryPanel(page)
+        discovery_panel.apply_product_category(campaign)
+   
 
-        search = CreatorSearch(page)
-        search.search(campaign.keyword)
-
-        # Optional
-        # Uncomment only when debugging
-        #
-        # page.pause()
+        creator_search = CreatorSearch(page)
+        creator_search.search(campaign.keyword)
 
         extractor = CreatorExtractor(page)
         creators = extractor.extract_visible_creators()
 
-        print("\n")
-        print("=" * 80)
+        # print()
+        # print("=" * 80)
         print(f"Extracted {len(creators)} creators")
-        print("=" * 80)
+        # print("=" * 80)
 
         for creator in creators:
             print(creator)
 
-        input("\nPress ENTER to close...")
+        # ---------------------------------
+        # Export to CSV
+        # ---------------------------------
 
+        exporter = CsvExporter()
+        csv_file = exporter.export(
+            creators,
+            campaign.keyword
+        )
+
+    except Exception as ex:
+            print("\nERROR:")
+            print(type(ex).__name__)
+            print(ex)
+            raise
     finally:
-        browser.stop()
+
+        input("\nPress ENTER to close...")
+        browser.close()
 
 
 if __name__ == "__main__":

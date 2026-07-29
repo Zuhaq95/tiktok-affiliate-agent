@@ -6,7 +6,7 @@ class Navigator:
 
     def open_discover_creators(self, debug=False):
 
-        #self.page.goto("https://affiliate.tiktok.com/")
+      
         self.page.goto(
     "https://affiliate.tiktok.com/",
     wait_until="domcontentloaded"
