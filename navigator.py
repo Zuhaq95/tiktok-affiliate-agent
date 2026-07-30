@@ -8,8 +8,6 @@ class Navigator:
         self.page = page
         self.popup_handler = PopupHandler(self.page)
 
-    
-
     def open_discover_creators(self):
 
         self.page.goto(
@@ -21,20 +19,33 @@ class Navigator:
 
         print("✓ Affiliate portal opened")
 
-        PopupHandler(self.page).close_startup_popup()
+        # Close homepage popup if present
+        self.popup_handler.close_startup_popup()
 
-        input("STEP 1 - Is the Affiliate homepage fully loaded? Press ENTER...")
-
+        # Wait until Discover creators is available
         discover = self.page.get_by_text("Discover creators")
+        discover.wait_for(state="visible", timeout=15000)
 
         print("✓ Clicking Discover creators")
 
         discover.click()
 
+        # Wait for next page to finish loading
         self.page.wait_for_load_state("networkidle")
-        PopupHandler(self.page).close_startup_popup()
 
-        input("STEP 2 - Did the page actually change? Press ENTER...")
+        # Close starter pack popup if it appears
+        self.popup_handler.close_startup_popup()
+
+        # Wait until filters become available
+        self.page.get_by_role(
+            "button",
+            name="Product category"
+        ).wait_for(
+            state="visible",
+            timeout=15000
+        )
+
+        print("✓ Discover Creators page loaded")
 
         if DEBUG:
             print("🐞 Opening Playwright Inspector...")

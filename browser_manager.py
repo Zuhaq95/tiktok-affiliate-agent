@@ -14,11 +14,11 @@ class BrowserManager:
             user_data_dir="sessions/tiktok",
             headless=HEADLESS
         )
-        #----------------test
-        print("Pages:", len(self.browser.pages))
-        for i, p in enumerate(self.browser.pages):
-            print(i, p.url)
-        #-----------------------
+        # #----------------test
+        # print("Pages:", len(self.browser.pages))
+        # for i, p in enumerate(self.browser.pages):
+        #     print(i, p.url)
+        # #-----------------------
 
         if self.browser.pages:
             self.page = self.browser.pages[0]
