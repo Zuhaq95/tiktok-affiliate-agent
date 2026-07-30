@@ -49,6 +49,10 @@ class DiscoveryPanel:
 
         self.apply_content_language(campaign)
 
+        self.apply_not_invited(campaign)
+
+        self.apply_gmv(campaign)
+
         print("\n✓ Filters applied\n")
 
     def select_radio_dropdown(self, button_name, option_text):
@@ -118,3 +122,48 @@ class DiscoveryPanel:
         self.page.wait_for_timeout(300)
 
         print(f"✓ {button_name} selected")
+    def tick_checkbox(self, label):
+
+        print(f"Ticking: {label}")
+
+        checkbox = self.page.get_by_text(
+            label,
+            exact=False
+        )
+
+        checkbox.click()
+
+        print(f"✓ {label} enabled")
+    def apply_not_invited(self, campaign):
+
+        if not campaign.not_invited:
+            return
+
+        print("Applying Not Invited...")
+
+        self.tick_checkbox(
+            "Not invited in past 90 days"
+        )
+
+        print("✓ Not Invited applied")    
+    def apply_gmv(self, campaign):
+
+        print("Applying GMV...")
+
+        self.open_performance_tab()
+
+        self.select_checkbox_dropdown(
+            "GMV",
+            campaign.gmv
+        )
+
+        print("✓ GMV applied")
+    def open_performance_tab(self):
+
+        self.page.get_by_role(
+            "button",
+            name="Performance",
+            exact=True
+        ).click()
+
+        self.page.wait_for_timeout(300)
