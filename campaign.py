@@ -3,11 +3,10 @@ from dataclasses import dataclass
 
 @dataclass
 class Campaign:
+
     name: str
 
     keyword: str
-
-   # product_category: str
 
     category: str
 
@@ -15,7 +14,7 @@ class Campaign:
 
     content_language: str
 
-    creator_gmv: str
+    gmv: str
 
     avg_commission: str
 

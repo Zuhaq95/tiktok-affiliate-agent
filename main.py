@@ -1,4 +1,5 @@
 from browser_manager import BrowserManager
+import discovery_panel
 from navigator import Navigator
 from discovery_panel import DiscoveryPanel
 from creator_search import CreatorSearch
@@ -16,10 +17,11 @@ def main():
         category="Textiles & Soft Furnishings",
         subcategory="Bedding",
         content_language="English",
-        creator_gmv="£10K+",
+        gmv="£10K+",
         avg_commission="Less than 10%",
         content_type="Video",
         not_invited=True,
+        
     )
 
     print(campaign)
@@ -34,7 +36,7 @@ def main():
         navigator.open_discover_creators()
 
         discovery_panel = DiscoveryPanel(page)
-        discovery_panel.apply_product_category(campaign)
+        discovery_panel.apply_filters(campaign)
 
         creator_search = CreatorSearch(page)
         creator_search.search(campaign.keyword)
