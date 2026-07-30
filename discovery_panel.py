@@ -7,21 +7,84 @@ class DiscoveryPanel:
         self.page = page
         self.popup_handler = PopupHandler(self.page)
 
-    def select_dropdown(self, button_name, option_text):
-
-        print(f"Selecting {option_text}...")
-
-        self.page.get_by_role(
+    # ------------------------
+    # Helper Methods
+    # ------------------------
+    def select_radio_dropdown(self, button_name, option_text):
+    
+            print(f"Selecting {button_name}: {option_text}")
+    
+            self.page.get_by_role(
             "button",
-            name=button_name
-        ).click()
-
-        self.page.get_by_text(
-            option_text
-        ).click()
-
-        print(f"✓ {option_text} selected")
-
+            name=button_name,
+            exact=True
+             ).click()
+    
+            popup = self.page.locator("[id^='core-select-popup-']").last
+    
+            popup.get_by_text(
+                option_text,
+                exact=True
+            ).click()
+    
+            print(f"✓ {button_name} selected")
+    def select_dropdown(self, button_name, option_text):
+        
+                print(f"Selecting {option_text}...")
+        
+                self.page.get_by_role(
+                    "button",
+                    name=button_name
+                ).click()
+        
+                self.page.get_by_text(
+                    option_text
+                ).click()
+        
+                print(f"✓ {option_text} selected")
+    def select_checkbox_dropdown(self, button_name, option_text):
+    
+            print(f"Selecting {button_name}: {option_text}")
+    
+            dropdown = self.page.get_by_role(
+                "button",
+                name=button_name,
+                exact=True
+            )
+    
+            dropdown.click()
+    
+            popup = self.page.locator("[id^='core-select-popup-']").last
+    
+            popup.get_by_text(
+                option_text,
+                exact=True
+            ).click()
+    
+            # Close the dropdown by clicking on an empty area
+            self.page.locator("body").click(
+                position={"x": 50, "y": 50},
+                force=True
+            )
+    
+            self.page.wait_for_timeout(300)
+    
+            print(f"✓ {button_name} selected")
+    def tick_checkbox(self, label):
+    
+            print(f"Ticking: {label}")
+    
+            checkbox = self.page.get_by_text(
+                label,
+                exact=False
+            )
+    
+            checkbox.click()
+    
+            print(f"✓ {label} enabled")
+    # ------------------------
+    # Creator Filters
+    # ------------------------
     def apply_product_category(self, campaign):
 
         print("Applying Product Category...")
@@ -38,7 +101,6 @@ class DiscoveryPanel:
         ).click()
 
         print("✓ Product Category applied")
-
     def apply_filters(self, campaign):
 
         print("\n========== APPLYING FILTERS ==========\n")
@@ -54,25 +116,6 @@ class DiscoveryPanel:
         self.apply_gmv(campaign)
 
         print("\n✓ Filters applied\n")
-
-    def select_radio_dropdown(self, button_name, option_text):
-
-        print(f"Selecting {button_name}: {option_text}")
-
-        self.page.get_by_role(
-        "button",
-        name=button_name,
-        exact=True
-         ).click()
-
-        popup = self.page.locator("[id^='core-select-popup-']").last
-
-        popup.get_by_text(
-            option_text,
-            exact=True
-        ).click()
-
-        print(f"✓ {button_name} selected")
     def apply_content_type(self, campaign):
 
         print("Applying Content Type...")
@@ -94,46 +137,8 @@ class DiscoveryPanel:
 
         print("✓ Content Language applied")
 
-    def select_checkbox_dropdown(self, button_name, option_text):
-
-        print(f"Selecting {button_name}: {option_text}")
-
-        dropdown = self.page.get_by_role(
-            "button",
-            name=button_name,
-            exact=True
-        )
-
-        dropdown.click()
-
-        popup = self.page.locator("[id^='core-select-popup-']").last
-
-        popup.get_by_text(
-            option_text,
-            exact=True
-        ).click()
-
-        # Close the dropdown by clicking on an empty area
-        self.page.locator("body").click(
-            position={"x": 50, "y": 50},
-            force=True
-        )
-
-        self.page.wait_for_timeout(300)
-
-        print(f"✓ {button_name} selected")
-    def tick_checkbox(self, label):
-
-        print(f"Ticking: {label}")
-
-        checkbox = self.page.get_by_text(
-            label,
-            exact=False
-        )
-
-        checkbox.click()
-
-        print(f"✓ {label} enabled")
+   
+   
     def apply_not_invited(self, campaign):
 
         if not campaign.not_invited:

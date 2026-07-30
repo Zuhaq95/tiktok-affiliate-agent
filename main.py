@@ -72,7 +72,7 @@ def main():
         if DEBUG:
             input("\nPress ENTER to close...")
 
-        browser.close()
+        browser.stop()
 
 
 if __name__ == "__main__":
