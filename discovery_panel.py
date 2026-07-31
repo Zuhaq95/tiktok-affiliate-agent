@@ -97,7 +97,8 @@ class DiscoveryPanel:
         )
 
         self.page.get_by_text(
-            campaign.subcategory
+            campaign.subcategory,
+            exact=True
         ).click()
 
         print("✓ Product Category applied")

@@ -10,40 +10,43 @@ class Navigator:
 
     def open_discover_creators(self):
 
-        self.page.goto(
-            "https://affiliate.tiktok.com/",
-            wait_until="domcontentloaded"
-        )
-
-        self.page.wait_for_load_state("networkidle")
+        # Open Affiliate Centre
+        self.page.goto("https://affiliate.tiktok.com/")
 
         print("✓ Affiliate portal opened")
 
         # Close homepage popup if present
         self.popup_handler.close_startup_popup()
 
-        # Wait until Discover creators is available
-        discover = self.page.get_by_text("Discover creators")
-        discover.wait_for(state="visible", timeout=15000)
+        # Locate Discover creators
+        discover = self.page.get_by_text(
+            "Discover creators",
+            exact=True
+        )
+
+        discover.wait_for(timeout=30000)
 
         print("✓ Clicking Discover creators")
 
         discover.click()
 
-        # Wait for next page to finish loading
-        self.page.wait_for_load_state("networkidle")
+        # Wait until we actually reach the creator page
+        self.page.wait_for_url(
+            "**/connection/creator*",
+            timeout=30000
+        )
 
-        # Close starter pack popup if it appears
+        # Close popup if it appears after navigation
         self.popup_handler.close_startup_popup()
 
-        # Wait until filters become available
-        self.page.get_by_role(
+        # Wait until filters are available
+        product_category = self.page.get_by_role(
             "button",
-            name="Product category"
-        ).wait_for(
-            state="visible",
-            timeout=15000
+            name="Product category",
+            exact=True
         )
+
+        product_category.wait_for(timeout=30000)
 
         print("✓ Discover Creators page loaded")
 
