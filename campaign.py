@@ -21,3 +21,5 @@ class Campaign:
     content_type: str
 
     not_invited: bool
+
+    max_creators: int = 30

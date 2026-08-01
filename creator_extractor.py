@@ -1,4 +1,5 @@
 from creator_parser import CreatorParser
+from ai.creator_normalizer import CreatorNormalizer
 
 
 class CreatorExtractor:
@@ -44,7 +45,11 @@ class CreatorExtractor:
                 try:
                     row = rows.nth(row_index)
 
+                    # Parse creator from TikTok row
                     creator = self.parser.parse(row)
+
+                    # Populate normalized numeric values
+                    CreatorNormalizer.normalize(creator)
 
                     creators.append(creator)
 

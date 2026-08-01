@@ -34,6 +34,7 @@ class CsvExporter:
             writer = csv.writer(file)
 
             writer.writerow([
+                "Rank",
                 "Username",
                 "Name",
                 "Followers",
@@ -42,12 +43,14 @@ class CsvExporter:
                 "Items Sold",
                 "Avg Views",
                 "Engagement",
-                "Previously Invited"
+                "Previously Invited",
+                "AI Score"
             ])
 
-            for creator in creators:
+            for rank, creator in enumerate(creators, start=1):
 
                 writer.writerow([
+                    rank,
                     creator.username,
                     creator.name,
                     creator.followers,
@@ -56,10 +59,12 @@ class CsvExporter:
                     creator.items_sold,
                     creator.avg_views,
                     creator.engagement,
-                    creator.previously_invited
+                    creator.previously_invited,
+                    creator.ai_score
                 ])
 
         print()
         print(f"✓ CSV exported to: {csv_file}")
 
         return csv_file
+    
