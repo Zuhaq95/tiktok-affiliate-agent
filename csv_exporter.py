@@ -9,7 +9,7 @@ class CsvExporter:
 
     def export(self, creators: list[Creator], keyword: str) -> Path:
         """
-        Export creators to a timestamped CSV file.
+        Export ranked creators to a timestamped CSV file.
 
         Returns:
             Path to the generated CSV.
@@ -35,36 +35,39 @@ class CsvExporter:
 
             writer.writerow([
                 "Rank",
+                "AI Score",
                 "Username",
                 "Name",
                 "Followers",
-                "Category",
                 "GMV",
                 "Items Sold",
                 "Avg Views",
                 "Engagement",
+                "Category",
                 "Previously Invited",
-                "AI Score"
+                "AI Reasons"
             ])
 
             for rank, creator in enumerate(creators, start=1):
 
                 writer.writerow([
                     rank,
+                    creator.ai_score,
                     creator.username,
                     creator.name,
                     creator.followers,
-                    creator.category,
                     creator.gmv,
                     creator.items_sold,
                     creator.avg_views,
                     creator.engagement,
+                    creator.category,
                     creator.previously_invited,
-                    creator.ai_score
+
+                    # Join all AI explanations into one readable cell
+                    " | ".join(creator.ai_reasons)
                 ])
 
         print()
         print(f"✓ CSV exported to: {csv_file}")
 
         return csv_file
-    
