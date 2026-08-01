@@ -12,32 +12,32 @@ class CreatorCollector:
 
         print("\nCollecting creators...\n")
 
-        creators = []
+        search_results = []
         seen = set()
 
         scroll_count = 0
         max_scrolls = 20
         no_new_scrolls = 0
 
-        while len(creators) < max_creators and scroll_count < max_scrolls:
+        while len(search_results) < max_creators and scroll_count < max_scrolls:
 
             print(f"\n===== Collection Cycle {scroll_count + 1} =====")
 
-            visible_creators = self.extractor.extract_visible_creators()
+            visible_results = self.extractor.extract_visible_creators()
 
             added = self.add_new_creators(
-                visible_creators,
-                creators,
+                visible_results,
+                search_results,
                 seen
             )
 
             self.log_progress(
-                visible_creators,
-                creators,
+                visible_results,
+                search_results,
                 added
             )
 
-            if len(creators) >= max_creators:
+            if len(search_results) >= max_creators:
                 print("\n✓ Target creator count reached.")
                 break
 
@@ -54,9 +54,9 @@ class CreatorCollector:
 
             scroll_count += 1
 
-        print(f"\n✓ Final creator count: {len(creators)}")
+        print(f"\n✓ Final creator count: {len(search_results)}")
 
-        return creators[:max_creators]
+        return search_results[:max_creators]
 
     # ----------------------------------------------------
     # Helper Methods
@@ -64,19 +64,22 @@ class CreatorCollector:
 
     def add_new_creators(
         self,
-        visible_creators,
-        creators,
+        visible_results,
+        search_results,
         seen
     ):
 
         added = 0
 
-        for creator in visible_creators:
+        for result in visible_results:
+
+            creator = result.creator
 
             if creator.username in seen:
                 continue
 
-            creators.append(creator)
+            search_results.append(result)
+
             seen.add(creator.username)
 
             added += 1
@@ -105,21 +108,21 @@ class CreatorCollector:
 
     def log_progress(
         self,
-        visible_creators,
-        creators,
+        visible_results,
+        search_results,
         added
     ):
 
-        if visible_creators:
+        if visible_results:
 
             print(
-                f"First creator : {visible_creators[0].username}"
+                f"First creator : {visible_results[0].creator.username}"
             )
 
             print(
-                f"Last creator  : {visible_creators[-1].username}"
+                f"Last creator  : {visible_results[-1].creator.username}"
             )
 
-        print(f"Visible creators : {len(visible_creators)}")
+        print(f"Visible creators : {len(visible_results)}")
         print(f"New creators     : {added}")
-        print(f"Total collected  : {len(creators)}")
+        print(f"Total collected  : {len(search_results)}")

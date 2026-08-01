@@ -2,14 +2,14 @@ from browser_manager import BrowserManager
 from navigator import Navigator
 from discovery_panel import DiscoveryPanel
 from creator_search import CreatorSearch
-from creator_extractor import CreatorExtractor
+from creator_collector import CreatorCollector
 from csv_exporter import CsvExporter
+
 from campaign import Campaign
 from config import DEBUG
-from ai.recommender import Recommender
-from creator_collector import CreatorCollector
 
 from ai.scorer import Scorer
+from ai.recommender import Recommender
 from ai.ranker import Ranker
 
 
@@ -30,55 +30,96 @@ def main():
     print(campaign)
 
     browser = BrowserManager()
+
     page = browser.start()
 
     try:
 
+        # ----------------------------------------
+        # Navigation
+        # ----------------------------------------
+
         navigator = Navigator(page)
         navigator.open_discover_creators()
+
+        # ----------------------------------------
+        # Apply Filters
+        # ----------------------------------------
 
         discovery_panel = DiscoveryPanel(page)
         discovery_panel.apply_filters(campaign)
 
+        # ----------------------------------------
+        # Search
+        # ----------------------------------------
+
         creator_search = CreatorSearch(page)
         creator_search.search(campaign.keyword)
 
+        # ----------------------------------------
+        # Collect Creators
+        # ----------------------------------------
+
         collector = CreatorCollector(page)
-        creators = collector.collect(
+
+        search_results = collector.collect(
             campaign.max_creators
         )
 
-        print(f"\n✓ Extracted {len(creators)} creators\n")
+        print(f"\n✓ Extracted {len(search_results)} creators\n")
 
         # ----------------------------------------
         # AI Scoring
         # ----------------------------------------
 
-        for creator in creators:
-            Scorer.score(creator, campaign)
-            Recommender.recommend(creator, campaign)
+        for result in search_results:
+
+            creator = result.creator
+
+            Scorer.score(
+                creator,
+                campaign
+            )
+
+            Recommender.recommend(
+                creator,
+                campaign
+            )
 
         # ----------------------------------------
         # AI Ranking
         # ----------------------------------------
 
-        creators = Ranker.rank(creators)
+        search_results = Ranker.rank(search_results)
+
+        # ----------------------------------------
+        # Console Output
+        # ----------------------------------------
 
         print("\n===== Ranked Creators =====\n")
 
-        for index, creator in enumerate(creators, start=1):
+        for index, result in enumerate(search_results, start=1):
+
+            creator = result.creator
+
             print(f"{index}. {creator.username}")
             print(f"   AI Score : {creator.ai_score}")
 
             for reason in creator.ai_reasons:
                 print(f"   ✓ {reason}")
 
-        print()
+        # ----------------------------------------
+        # Export CSV
+        # ----------------------------------------
+
         exporter = CsvExporter()
 
         csv_file = exporter.export(
-            creators,
+
+            [result.creator for result in search_results],
+
             campaign.keyword
+
         )
 
         print(f"\n✓ CSV exported successfully:")

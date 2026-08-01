@@ -1,5 +1,6 @@
 from creator_parser import CreatorParser
 from ai.creator_normalizer import CreatorNormalizer
+from search_result import SearchResult
 
 
 class CreatorExtractor:
@@ -18,7 +19,7 @@ class CreatorExtractor:
 
         print(f"TBodies found: {tbody_count}")
 
-        creators = []
+        search_results = []
 
         for tbody_index in range(tbody_count):
 
@@ -43,21 +44,30 @@ class CreatorExtractor:
             for row_index in range(row_count):
 
                 try:
+
                     row = rows.nth(row_index)
 
-                    # Parse creator from TikTok row
+                    # Parse creator
                     creator = self.parser.parse(row)
 
                     # Populate normalized numeric values
                     CreatorNormalizer.normalize(creator)
 
-                    creators.append(creator)
+                    # Keep both business data and browser element
+                    search_results.append(
+                        SearchResult(
+                            creator=creator,
+                            click_target=row
+                        )
+                    )
 
                 except Exception as ex:
                     print(f"Row {row_index + 1} failed: {ex}")
 
             break
 
-        print(f"\nSuccessfully extracted {len(creators)} creators.\n")
+        print(
+            f"\nSuccessfully extracted {len(search_results)} creators.\n"
+        )
 
-        return creators
+        return search_results

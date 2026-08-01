@@ -1,4 +1,5 @@
 from dataclasses import dataclass, field
+from profiles.creator_profile import CreatorProfile
 
 
 @dataclass
@@ -30,6 +31,9 @@ class Creator:
     # AI Results
     ai_score: float = 0.0
     ai_reasons: list[str] = field(default_factory=list)
+
+    # Profile
+    profile: CreatorProfile | None = None
 
     def __str__(self):
         return (
