@@ -12,7 +12,9 @@ class Recommender:
 
         reasons = []
 
+        # ------------------------
         # GMV
+        # ------------------------
         if creator.gmv_value >= 200000:
             reasons.append(f"Excellent GMV ({creator.gmv})")
         elif creator.gmv_value >= 100000:
@@ -20,7 +22,9 @@ class Recommender:
         elif creator.gmv_value < 10000:
             reasons.append(f"Low GMV ({creator.gmv})")
 
+        # ------------------------
         # Average Views
+        # ------------------------
         if creator.avg_views_value >= 100000:
             reasons.append(f"Excellent average views ({creator.avg_views})")
         elif creator.avg_views_value >= 50000:
@@ -28,7 +32,9 @@ class Recommender:
         elif creator.avg_views_value < 1000:
             reasons.append(f"Low average views ({creator.avg_views})")
 
+        # ------------------------
         # Engagement
+        # ------------------------
         if creator.engagement_value >= 8:
             reasons.append(f"Outstanding engagement ({creator.engagement})")
         elif creator.engagement_value >= 5:
@@ -36,7 +42,9 @@ class Recommender:
         elif creator.engagement_value < 1:
             reasons.append(f"Low engagement ({creator.engagement})")
 
+        # ------------------------
         # Followers
+        # ------------------------
         if creator.followers_value >= 500000:
             reasons.append(
                 f"Large follower base ({creator.followers})"
@@ -50,11 +58,17 @@ class Recommender:
                 f"Growing audience ({creator.followers})"
             )
 
-        # Category
-        if creator.category.lower() == campaign.category.lower():
-            reasons.append("Perfect category match")
-        else:
-            reasons.append("Category differs from campaign")
+        # NOTE:
+        # We intentionally do NOT compare creator.category with
+        # campaign.category.
+        #
+        # TikTok already filters creators by the selected campaign
+        # category, while the table only displays the creator's
+        # primary category. A creator may actively sell products
+        # in multiple categories that are not shown here.
+        #
+        # In Phase 2 this will be replaced with real evidence from
+        # the creator profile (Revenue by Category).
 
         creator.ai_reasons = reasons
 
