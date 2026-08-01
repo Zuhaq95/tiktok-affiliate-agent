@@ -43,11 +43,7 @@ def main():
         creator_search = CreatorSearch(page)
         creator_search.search(campaign.keyword)
 
-        # extractor = CreatorExtractor(page)
-        # creators = extractor.extract_visible_creators()
-
         collector = CreatorCollector(page)
-
         creators = collector.collect(
             campaign.max_creators
         )
