@@ -1,81 +1,40 @@
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 
 
 @dataclass
 class CreatorProfile:
-    """
-    Stores detailed information extracted from the
-    Creator Details page.
 
-    This object is attached to a Creator after
-    deep profile analysis.
+    # --------------------------
+    # Header Information
+    # --------------------------
 
-    Creator
-        └── profile
-    """
+    username: str = ""
+    display_name: str = ""
 
-    # -----------------------------
-    # Sales Overview
-    # -----------------------------
+    rating: float = 0.0
+    reviews: int = 0
 
-    gmv: str = ""
-    items_sold: str = ""
-    gpm: str = ""
-    gmv_per_customer: str = ""
+    followers: str = ""
 
-    # -----------------------------
-    # GMV by Product Category
-    # -----------------------------
+    categories: list[str] = None
 
-    category_distribution: dict = field(default_factory=dict)
+    mcn: str = ""
 
-    # Example:
-    # {
-    #     "Textiles & Soft Furnishings": 98.4,
-    #     "Home Supplies": 1.6
-    # }
+    bio: str = ""
 
-    # -----------------------------
-    # Sales Channels
-    # -----------------------------
+    # --------------------------
+    # Sections
+    # --------------------------
 
-    video_sales_percentage: float = 0
-    live_sales_percentage: float = 0
+    sales = None
+    collaboration = None
+    video = None
+    live = None
+    followers_data = None
+    trends = None
+    similar_creators = None
 
-    # -----------------------------
-    # Top Products
-    # -----------------------------
+    def __post_init__(self):
 
-    top_products: list = field(default_factory=list)
-
-    # -----------------------------
-    # Top Videos
-    # -----------------------------
-
-    top_videos: list = field(default_factory=list)
-
-    # -----------------------------
-    # Audience
-    # -----------------------------
-
-    audience_gender: dict = field(default_factory=dict)
-
-    audience_age: dict = field(default_factory=dict)
-
-    audience_location: dict = field(default_factory=dict)
-
-    # -----------------------------
-    # Trend
-    # -----------------------------
-
-    trend: str = ""
-
-    # -----------------------------
-    # Deep AI
-    # -----------------------------
-
-    deep_score: float = 0
-
-    confidence: float = 0
-
-    evidence: list[str] = field(default_factory=list)
+        if self.categories is None:
+            self.categories = []
