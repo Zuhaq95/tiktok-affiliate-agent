@@ -1,5 +1,4 @@
 from dataclasses import dataclass
-from playwright.sync_api import Locator
 
 from creator import Creator
 
@@ -7,17 +6,12 @@ from creator import Creator
 @dataclass
 class CreatorResult:
     """
-    Represents one creator found in the search results.
+    Represents one creator discovered from the search results.
 
     It contains:
-
-    - The parsed Creator object (business data)
-    - The Playwright locator that can reopen the profile
-
-    This keeps browser automation separate from
-    the business model.
+    - Quick creator information
+    - The row locator used to reopen the profile
     """
 
     creator: Creator
-
-    click_target: Locator
+    row_locator: object

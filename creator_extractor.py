@@ -1,6 +1,6 @@
 from creator_parser import CreatorParser
 from ai.creator_normalizer import CreatorNormalizer
-from search_result import SearchResult
+from profiles.creator_result import CreatorResult
 
 
 class CreatorExtractor:
@@ -55,9 +55,9 @@ class CreatorExtractor:
 
                     # Keep both business data and browser element
                     search_results.append(
-                        SearchResult(
+                        CreatorResult(
                             creator=creator,
-                            click_target=row
+                            row_locator=row
                         )
                     )
 

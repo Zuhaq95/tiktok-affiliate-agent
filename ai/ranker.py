@@ -1,16 +1,16 @@
-from search_result import SearchResult
+from profiles.creator_result import CreatorResult
 
 
 class Ranker:
     """
-    Sorts search results by the creator's AI score.
+    Sorts creators by AI score.
     """
 
     @staticmethod
-    def rank(search_results: list[SearchResult]) -> list[SearchResult]:
+    def rank(results: list[CreatorResult]) -> list[CreatorResult]:
 
         return sorted(
-            search_results,
+            results,
             key=lambda result: result.creator.ai_score,
             reverse=True
         )

@@ -12,6 +12,8 @@ from ai.scorer import Scorer
 from ai.recommender import Recommender
 from ai.ranker import Ranker
 
+from profiles.profile_opener import ProfileOpener
+
 
 def main():
 
@@ -30,7 +32,6 @@ def main():
     print(campaign)
 
     browser = BrowserManager()
-
     page = browser.start()
 
     try:
@@ -74,15 +75,13 @@ def main():
 
         for result in search_results:
 
-            creator = result.creator
-
             Scorer.score(
-                creator,
+                result.creator,
                 campaign
             )
 
             Recommender.recommend(
-                creator,
+                result.creator,
                 campaign
             )
 
@@ -112,18 +111,34 @@ def main():
         # Export CSV
         # ----------------------------------------
 
+        creators = [
+            result.creator
+            for result in search_results
+        ]
+
         exporter = CsvExporter()
 
         csv_file = exporter.export(
-
-            [result.creator for result in search_results],
-
+            creators,
             campaign.keyword
-
         )
 
-        print(f"\n✓ CSV exported successfully:")
+        print("\n✓ CSV exported successfully:")
         print(csv_file)
+
+        # ----------------------------------------
+        # Open First Creator (Testing)
+        # ----------------------------------------
+
+        opener = ProfileOpener(page)
+
+        print("\nOpening first creator...\n")
+
+        profile_page = opener.open(
+            search_results[0]
+        )
+
+        profile_page.pause()
 
     except Exception as ex:
 
