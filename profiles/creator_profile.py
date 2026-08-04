@@ -1,40 +1,22 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
+
+from profiles.models.header_info import HeaderInfo
+from profiles.models.sales_info import SalesInfo
+from profiles.models.video_info import VideoInfo
+from profiles.models.collaboration_info import CollaborationInfo
+from profiles.models.trend_info import TrendInfo
+from profiles.models.followers_info import FollowersInfo
 
 
 @dataclass
 class CreatorProfile:
 
-    # --------------------------
-    # Header Information
-    # --------------------------
+    header: HeaderInfo = field(default_factory=HeaderInfo)
 
-    username: str = ""
-    display_name: str = ""
+    sales: SalesInfo = field(default_factory=SalesInfo)
 
-    rating: float = 0.0
-    reviews: int = 0
+    videos: VideoInfo = field(default_factory=VideoInfo)
 
-    followers: str = ""
+    audience: FollowersInfo = field(default_factory=FollowersInfo)
 
-    categories: list[str] = None
-
-    mcn: str = ""
-
-    bio: str = ""
-
-    # --------------------------
-    # Sections
-    # --------------------------
-
-    sales = None
-    collaboration = None
-    video = None
-    live = None
-    followers_data = None
-    trends = None
-    similar_creators = None
-
-    def __post_init__(self):
-
-        if self.categories is None:
-            self.categories = []
+    trends: TrendInfo = field(default_factory=TrendInfo)
