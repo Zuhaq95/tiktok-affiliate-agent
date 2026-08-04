@@ -47,24 +47,18 @@ class ProfileOpener:
 
     def wait_until_ready(self, profile_page: Page):
 
-        """
-        Wait until the Creator Details page has finished rendering.
-        """
+        print("Waiting for 'Creator details'...")
 
-        try:
+        profile_page.locator(
+            "text=Creator details"
+        ).wait_for(timeout=20000)
 
-            # Wait for page title
-            profile_page.locator(
-                "text=Creator details"
-            ).wait_for(timeout=10000)
+        print("✓ Creator details found")
 
-            # Wait until the Invite button exists
-            profile_page.locator(
-                "button:has-text('Invite')"
-            ).wait_for(timeout=10000)
+        print("Waiting for Invite button...")
 
-        except TimeoutError:
+        profile_page.locator(
+            "button:has-text('Invite')"
+        ).wait_for(timeout=20000)
 
-            raise Exception(
-                "Creator profile did not finish loading."
-            )
+        print("✓ Invite button found")

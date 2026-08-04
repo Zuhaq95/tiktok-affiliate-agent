@@ -13,6 +13,7 @@ from ai.recommender import Recommender
 from ai.ranker import Ranker
 
 from profiles.profile_opener import ProfileOpener
+from profiles.profile_extractor import ProfileExtractor
 
 
 def main():
@@ -137,6 +138,31 @@ def main():
         profile_page = opener.open(
             search_results[0]
         )
+
+        from profiles.profile_extractor import ProfileExtractor
+
+        extractor = ProfileExtractor(profile_page)
+
+        profile = extractor.extract()
+
+        print()
+        print("=" * 60)
+        print("HEADER DATA")
+        print("=" * 60)
+
+        print("Username     :", profile.username)
+        print("Display Name :", profile.display_name)
+        print("Rating       :", profile.rating)
+        print("Reviews      :", profile.review_count)
+        print("Categories   :", profile.categories)
+        print("Followers    :", profile.followers)
+        print("MCN          :", profile.mcn)
+        print("Email        :", profile.email)
+        print("Website      :", profile.website)
+
+        print()
+        print("Bio:")
+        print(profile.bio)
 
         profile_page.pause()
 

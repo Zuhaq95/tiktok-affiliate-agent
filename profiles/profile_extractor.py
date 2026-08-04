@@ -1,15 +1,15 @@
 from playwright.sync_api import Page
 
 from profiles.creator_profile import CreatorProfile
-
-from profiles.sales_parser import SalesParser
-from profiles.video_parser import VideoParser
-from profiles.followers_parser import FollowerParser
-from profiles.trend_parser import TrendParser
-from profiles.header_parser import CategoryParser
+from profiles.header_parser import HeaderParser
 
 
 class ProfileExtractor:
+    """
+    Coordinates extraction of the complete creator profile.
+
+    Each parser is responsible for one section of the page.
+    """
 
     def __init__(self, page: Page):
 
@@ -24,26 +24,10 @@ class ProfileExtractor:
 
         profile = CreatorProfile()
 
-        profile.sales = SalesParser(
+        HeaderParser(
             self.page
-        ).parse()
+        ).parse(profile)
 
-        profile.video = VideoParser(
-            self.page
-        ).parse()
-
-        profile.followers = FollowerParser(
-            self.page
-        ).parse()
-
-        profile.trends = TrendParser(
-            self.page
-        ).parse()
-
-        profile.categories = CategoryParser(
-            self.page
-        ).parse()
-
-        print("✓ Profile extracted")
+        print("✓ Creator profile extracted.")
 
         return profile

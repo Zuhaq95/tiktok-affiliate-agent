@@ -1,30 +1,31 @@
 from playwright.sync_api import Page
+import re
 
 from profiles.creator_profile import CreatorProfile
 
 
 class HeaderParser:
     """
-    Parses the top creator information section.
+    Parses the creator header section.
 
-    This parser extracts everything above the Sales tabs.
-
-    Responsibility:
-        - username
-        - display name
-        - categories
-        - followers
-        - rating
-        - reviews
+    Extracts:
+        - Username
+        - Display Name
+        - Rating
+        - Review Count
+        - Categories
+        - Followers
         - MCN
-        - bio
-        - email
-        - website / Instagram
+        - Bio
+        - Email
+        - Website / Instagram
     """
 
     def __init__(self, page: Page):
 
         self.page = page
+
+    # ---------------------------------------------------------
 
     def parse(self, profile: CreatorProfile):
 
@@ -34,93 +35,184 @@ class HeaderParser:
 
         profile.username = self.username()
         profile.display_name = self.display_name()
+
+        profile.rating = self.rating()
+        profile.review_count = self.review_count()
+
         profile.categories = self.categories()
         profile.followers = self.followers()
 
-        # We'll implement these one-by-one
-        profile.rating = None
-        profile.review_count = None
-        profile.mcn = None
-        profile.bio = None
-        profile.email = None
-        profile.website = None
+        profile.mcn = self.mcn()
+
+        profile.bio = self.bio()
+
+        profile.email = self.email()
+
+        profile.website = self.website()
 
         print("✓ Header parsed")
 
-    # -------------------------------------------------
+    # ---------------------------------------------------------
 
     def wait_until_loaded(self):
 
         self.page.locator(
             "button:has-text('Invite')"
-        ).wait_for()
+        ).wait_for(timeout=10000)
 
-    # -------------------------------------------------
+    # ---------------------------------------------------------
 
     def username(self):
 
         return (
             self.page
-            .locator("span.leading-21")
+            .locator("span.text-head-l")
             .first
             .inner_text()
             .strip()
         )
-
-    # -------------------------------------------------
+    
+    # ---------------------------------------------------------
 
     def display_name(self):
 
         return (
             self.page
-            .locator("span.leading-21")
-            .nth(1)
+            .locator("span.text-overflow-single")
+            .first
             .inner_text()
             .strip()
         )
 
-    # -------------------------------------------------
+        return ""
+
+    # ---------------------------------------------------------
+
+    def rating(self):
+
+        text = self.page.locator("body").inner_text()
+
+        match = re.search(
+            r"Rating\s+([0-9.]+)",
+            text
+        )
+
+        if match:
+
+            return float(match.group(1))
+
+        return None
+
+    # ---------------------------------------------------------
+
+    def review_count(self):
+
+        text = self.page.locator("body").inner_text()
+
+        match = re.search(
+            r"(\d+)\s+review",
+            text,
+            re.IGNORECASE
+        )
+
+        if match:
+
+            return int(match.group(1))
+
+        return 0
+
+    # ---------------------------------------------------------
 
     def categories(self):
 
-        labels = self.page.locator("span")
+        return self.value_after_label(
+            "Categories"
+        )
 
-        count = labels.count()
-
-        for i in range(count):
-
-            text = labels.nth(i).inner_text().strip()
-
-            if text == "Categories":
-
-                return (
-                    labels
-                    .nth(i + 1)
-                    .inner_text()
-                    .strip()
-                )
-
-        return ""
-
-    # -------------------------------------------------
+    # ---------------------------------------------------------
 
     def followers(self):
 
-        labels = self.page.locator("span")
+        return self.value_after_label(
+            "Followers"
+        )
 
-        count = labels.count()
+    # ---------------------------------------------------------
+
+    def mcn(self):
+
+        return self.value_after_label(
+            "MCN"
+        )
+
+    # ---------------------------------------------------------
+
+    def bio(self):
+
+        bio = self.page.locator(
+            "span.whitespace-pre-wrap"
+        )
+
+        if bio.count():
+
+            return bio.first.inner_text().strip()
+
+        return ""
+
+    # ---------------------------------------------------------
+
+    def email(self):
+
+        bio = self.bio()
+
+        match = re.search(
+            r'[\w\.-]+@[\w\.-]+\.\w+',
+            bio
+        )
+
+        if match:
+
+            return match.group(0)
+
+        return ""
+
+    # ---------------------------------------------------------
+
+    def website(self):
+
+        links = self.page.locator("a")
+
+        if links.count():
+
+            return (
+                links.first
+                .get_attribute("href")
+            )
+
+        return ""
+
+    # ---------------------------------------------------------
+
+    def value_after_label(self, label):
+
+        spans = self.page.locator("span")
+
+        count = spans.count()
 
         for i in range(count):
 
-            text = labels.nth(i).inner_text().strip()
+            text = spans.nth(i).inner_text().strip()
 
-            if text == "Followers":
+            if text == label:
 
-                return (
-                    labels
-                    .nth(i + 1)
-                    .inner_text()
-                    .strip()
-                )
+                if i + 1 < count:
+
+                    value = (
+                        spans
+                        .nth(i + 1)
+                        .inner_text()
+                    )
+
+                    return " ".join(value.split())
 
         return ""
