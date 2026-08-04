@@ -8,6 +8,8 @@ class CollaborationInfo:
 
     average_commission_rate: str = ""
 
+    average_commission_rate_value: float = 0
+
     products: int = 0
 
     brand_collaborations: int = 0

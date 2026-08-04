@@ -14,7 +14,38 @@ from ai.ranker import Ranker
 
 from profiles.profile_opener import ProfileOpener
 from profiles.profile_extractor import ProfileExtractor
+from profiles.helpers.metric_card_parser import MetricCardParser
 
+
+# ---------------------------------------------------------
+# Helper Methods
+# ---------------------------------------------------------
+
+def print_profile(profile):
+
+    print()
+    print("=" * 60)
+    print("HEADER DATA")
+    print("=" * 60)
+
+    print("Username     :", profile.header.username)
+    print("Display Name :", profile.header.display_name)
+    print("Rating       :", profile.header.rating)
+    print("Reviews      :", profile.header.review_count)
+    print("Categories   :", profile.header.categories)
+    print("Followers    :", profile.header.followers)
+    print("MCN          :", profile.header.mcn)
+    print("Email        :", profile.header.email)
+    print("Website      :", profile.header.website)
+
+    print()
+    print("Bio:")
+    print(profile.header.bio)
+
+
+# ---------------------------------------------------------
+# Main
+# ---------------------------------------------------------
 
 def main():
 
@@ -128,7 +159,7 @@ def main():
         print(csv_file)
 
         # ----------------------------------------
-        # Open First Creator (Testing)
+        # TESTING ONLY
         # ----------------------------------------
 
         opener = ProfileOpener(page)
@@ -139,30 +170,21 @@ def main():
             search_results[0]
         )
 
-        from profiles.profile_extractor import ProfileExtractor
-
         extractor = ProfileExtractor(profile_page)
 
         profile = extractor.extract()
 
+        #print_profile(profile)
         print()
         print("=" * 60)
-        print("HEADER DATA")
+        print("TESTING METRIC CARD PARSER")
         print("=" * 60)
 
-        print("Username     :", profile.username)
-        print("Display Name :", profile.display_name)
-        print("Rating       :", profile.rating)
-        print("Reviews      :", profile.review_count)
-        print("Categories   :", profile.categories)
-        print("Followers    :", profile.followers)
-        print("MCN          :", profile.mcn)
-        print("Email        :", profile.email)
-        print("Website      :", profile.website)
+        metrics = MetricCardParser(profile_page).parse()
 
-        print()
-        print("Bio:")
-        print(profile.bio)
+        for label, value in metrics.items():
+
+            print(f"{label:<25} : {value}")
 
         profile_page.pause()
 

@@ -1,13 +1,13 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 
 @dataclass
 class FollowersInfo:
 
-    female_percentage: float | None = None
+    male_percentage: float = 0
 
-    male_percentage: float | None = None
+    female_percentage: float = 0
 
-    top_country: str = ""
+    top_locations: list[str] = field(default_factory=list)
 
-    top_age_group: str = ""
+    age_groups: dict[str, float] = field(default_factory=dict)

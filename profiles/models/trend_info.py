@@ -4,8 +4,12 @@ from dataclasses import dataclass
 @dataclass
 class TrendInfo:
 
-    followers_trend: str = ""
+    gmv_trend: list[float] | None = None
 
-    gmv_trend: str = ""
+    units_sold_trend: list[float] | None = None
 
-    engagement_trend: str = ""
+    followers_trend: list[float] | None = None
+
+    video_views_trend: list[float] | None = None
+
+    engagement_trend: list[float] | None = None

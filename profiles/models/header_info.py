@@ -16,6 +16,8 @@ class HeaderInfo:
 
     followers: str = ""
 
+    followers_value: int = 0
+
     mcn: str = ""
 
     bio: str = ""

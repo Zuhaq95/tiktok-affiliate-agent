@@ -2,6 +2,7 @@ from playwright.sync_api import Page
 import re
 
 from profiles.creator_profile import CreatorProfile
+from profiles.models.header_info import HeaderInfo
 
 
 class HeaderParser:
@@ -27,28 +28,26 @@ class HeaderParser:
 
     # ---------------------------------------------------------
 
-    def parse(self, profile: CreatorProfile):
+    def parse(self, header: HeaderInfo):
 
         print("Parsing header...")
 
         self.wait_until_loaded()
 
-        profile.username = self.username()
-        profile.display_name = self.display_name()
+        header.username = self.username()
+        header.display_name = self.display_name()
 
-        profile.rating = self.rating()
-        profile.review_count = self.review_count()
+        header.rating = self.rating()
+        header.review_count = self.review_count()
 
-        profile.categories = self.categories()
-        profile.followers = self.followers()
+        header.categories = self.categories()
+        header.followers = self.followers()
 
-        profile.mcn = self.mcn()
+        header.mcn = self.mcn()
 
-        profile.bio = self.bio()
-
-        profile.email = self.email()
-
-        profile.website = self.website()
+        header.bio = self.bio()
+        header.email = self.email()
+        header.website = self.website()
 
         print("✓ Header parsed")
 

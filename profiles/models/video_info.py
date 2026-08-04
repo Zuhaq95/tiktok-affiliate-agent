@@ -4,12 +4,16 @@ from dataclasses import dataclass
 @dataclass
 class VideoInfo:
 
-    average_views: str = ""
+    video_gpm: str = ""
 
-    average_likes: str = ""
+    video_gpm_value: float = 0
 
-    average_comments: str = ""
+    videos: int = 0
 
-    average_shares: str = ""
+    average_video_views: str = ""
 
-    engagement_rate: float | None = None
+    average_video_views_value: int = 0
+
+    average_video_engagement_rate: str = ""
+
+    average_video_engagement_rate_value: float = 0

@@ -1,7 +1,9 @@
 from playwright.sync_api import Page
 
 from profiles.creator_profile import CreatorProfile
+
 from profiles.header_parser import HeaderParser
+from profiles.sales_parser import SalesParser
 
 
 class ProfileExtractor:
@@ -15,6 +17,9 @@ class ProfileExtractor:
 
         self.page = page
 
+        self.header_parser = HeaderParser(page)
+        self.sales_parser = SalesParser(page)
+
     def extract(self) -> CreatorProfile:
 
         print()
@@ -24,9 +29,21 @@ class ProfileExtractor:
 
         profile = CreatorProfile()
 
-        HeaderParser(
-            self.page
-        ).parse(profile)
+        # -------------------------------
+        # Header
+        # -------------------------------
+
+        self.header_parser.parse(
+            profile.header
+        )
+
+        # -------------------------------
+        # Sales
+        # -------------------------------
+
+        self.sales_parser.parse(
+            profile.sales
+        )
 
         print("✓ Creator profile extracted.")
 
