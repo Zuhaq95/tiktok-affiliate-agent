@@ -4,9 +4,9 @@ from profiles.creator_profile import CreatorProfile
 
 from profiles.sales_parser import SalesParser
 from profiles.video_parser import VideoParser
-from profiles.follower_parser import FollowerParser
+from profiles.followers_parser import FollowerParser
 from profiles.trend_parser import TrendParser
-from profiles.category_parser import CategoryParser
+from profiles.header_parser import CategoryParser
 
 
 class ProfileExtractor:

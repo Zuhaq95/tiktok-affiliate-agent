@@ -8,10 +8,11 @@ class ProfileOpener:
     Opens a creator profile in a new browser tab.
 
     Responsibilities:
+        - Scroll creator row into view
         - Click creator row
-        - Wait for popup
-        - Wait until Creator Details page is ready
-        - Return the new page
+        - Wait for popup tab
+        - Wait until Creator Details page is rendered
+        - Return the profile page
     """
 
     def __init__(self, page: Page):
@@ -25,7 +26,7 @@ class ProfileOpener:
         print(f"Opening profile: {result.creator.username}")
         print("=" * 60)
 
-        # Click row and wait for new tab
+        # Click creator row and wait for new tab
         with self.page.expect_popup() as popup_info:
 
             result.row_locator.scroll_into_view_if_needed()
@@ -34,11 +35,10 @@ class ProfileOpener:
 
         profile_page = popup_info.value
 
-        # Wait for browser page
+        # Wait until browser DOM is ready
         profile_page.wait_for_load_state("domcontentloaded")
-        profile_page.wait_for_load_state("networkidle")
 
-        # Wait until Creator Details page is actually rendered
+        # Wait until Creator Details page is rendered
         self.wait_until_ready(profile_page)
 
         print("✓ Profile opened successfully.")
@@ -48,16 +48,20 @@ class ProfileOpener:
     def wait_until_ready(self, profile_page: Page):
 
         """
-        Wait until Creator Details page has finished rendering.
+        Wait until the Creator Details page has finished rendering.
         """
 
         try:
 
+            # Wait for page title
             profile_page.locator(
                 "text=Creator details"
             ).wait_for(timeout=10000)
 
-            profile_page.locator("button:has-text('Invite')").wait_for()
+            # Wait until the Invite button exists
+            profile_page.locator(
+                "button:has-text('Invite')"
+            ).wait_for(timeout=10000)
 
         except TimeoutError:
 
