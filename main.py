@@ -14,7 +14,7 @@ from ai.ranker import Ranker
 
 from profiles.profile_opener import ProfileOpener
 from profiles.profile_extractor import ProfileExtractor
-from profiles.helpers.metric_card_parser import MetricCardParser
+
 
 
 # ---------------------------------------------------------
@@ -41,6 +41,16 @@ def print_profile(profile):
     print()
     print("Bio:")
     print(profile.header.bio)
+
+    print()
+    print("=" * 60)
+    print("SALES")
+    print("=" * 60)
+
+    print("GMV               :", profile.sales.total_gmv)
+    print("Items Sold        :", profile.sales.items_sold)
+    print("GPM               :", profile.sales.gpm)
+    print("GMV per Customer  :", profile.sales.gmv_per_customer)
 
 
 # ---------------------------------------------------------
@@ -174,17 +184,7 @@ def main():
 
         profile = extractor.extract()
 
-        #print_profile(profile)
-        print()
-        print("=" * 60)
-        print("TESTING METRIC CARD PARSER")
-        print("=" * 60)
 
-        metrics = MetricCardParser(profile_page).parse()
-
-        for label, value in metrics.items():
-
-            print(f"{label:<25} : {value}")
 
         profile_page.pause()
 

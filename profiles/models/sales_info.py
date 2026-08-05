@@ -5,6 +5,12 @@ from dataclasses import dataclass, field
 class SalesInfo:
 
     # -----------------------------
+    # Report Period
+    # -----------------------------
+
+    report_period: str = ""
+
+    # -----------------------------
     # Overview
     # -----------------------------
 
@@ -21,29 +27,17 @@ class SalesInfo:
     gmv_per_customer_value: float = 0
 
     # -----------------------------
-    # Sales Channels
+    # Sales Channel Distribution
     # -----------------------------
 
-    video_percentage: float = 0
-
-    live_percentage: float = 0
-
-    # -----------------------------
-    # Category Distribution
-    # -----------------------------
-
-    category_distribution: dict[str, float] = field(
+    sales_channel_distribution: dict[str, float] = field(
         default_factory=dict
     )
 
     # -----------------------------
-    # Trend
+    # Product Category Distribution
     # -----------------------------
 
-    monthly_gmv: list[float] = field(
-        default_factory=list
-    )
-
-    monthly_units: list[int] = field(
-        default_factory=list
+    category_distribution: dict[str, float] = field(
+        default_factory=dict
     )
