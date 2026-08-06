@@ -1,52 +1,49 @@
 import re
 
-from playwright.sync_api import Page
+from playwright.sync_api import Locator
 
 from profiles.models.collaboration_info import CollaborationInfo
 
 from profiles.helpers.metric_card_parser import MetricCardParser
-from profiles.helpers.parser_utils import ParserUtils
 from profiles.helpers.carousel_navigator import CarouselNavigator
+from profiles.helpers.parser_utils import ParserUtils
 
 
 class CollaborationParser:
     """
     Parses the Collaboration section.
 
-    Extracts
+    Responsibility:
+        - Parse collaboration metrics
+        - Parse product price range
 
-    - Estimated Post Rate
-    - Average Commission Rate
-    - Products
-    - Brand Collaborations
-    - Product Price Range
+    It never searches the page.
+    It only parses the section it is given.
     """
-
-    def __init__(self, page: Page):
-
-        self.page = page
 
     # ---------------------------------------------------------
 
-    def parse(self, collaboration: CollaborationInfo):
+    def parse(
+        self,
+        section: Locator,
+        collaboration: CollaborationInfo
+    ):
 
         print("Parsing collaboration...")
-
-        self.wait_until_loaded()
-
-        section = self.collaboration_section()
 
         metric_parser = MetricCardParser(section)
         navigator = CarouselNavigator(section)
 
         metrics = {}
 
-        # Parse first page
+        # ---------------------------------------
+        # Metric Cards
+        # ---------------------------------------
+
         metrics.update(
             metric_parser.parse_visible()
         )
 
-        # Parse remaining pages
         while navigator.move_next():
 
             metrics.update(
@@ -136,30 +133,12 @@ class CollaborationParser:
 
     # ---------------------------------------------------------
 
-    def wait_until_loaded(self):
-        print("Waiting for Collaboration metrics section...")
-        self.page.get_by_text(
-        "Collaboration metrics",
-                exact=True
-            ).nth(1).wait_for(timeout=10000)
-
-    # ---------------------------------------------------------
-
-    def collaboration_section(self):
-
-        return self.page.locator(
-            "text=Collaboration"
-        ).locator("..").locator("..")
-
-    # ---------------------------------------------------------
-
     def parse_price_range(
         self,
         collaboration: CollaborationInfo
     ):
 
         if not collaboration.product_price:
-
             return
 
         values = re.findall(

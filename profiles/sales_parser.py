@@ -1,4 +1,4 @@
-from playwright.sync_api import Page
+from playwright.sync_api import Locator
 
 from profiles.models.sales_info import SalesInfo
 
@@ -11,47 +11,46 @@ class SalesParser:
     """
     Parses the complete Sales section.
 
-    Extracts
+    Responsibility:
+        - Parse overview metrics
+        - Parse sales distributions
 
-    - Overview metrics
-    - GMV by sales channel
-    - GMV by product category
+    It never searches the page.
+    It only parses the section it is given.
     """
-
-    def __init__(self, page: Page):
-
-        self.page = page
 
     # ---------------------------------------------------------
 
-    def parse(self, sales: SalesInfo):
+    def parse(
+        self,
+        section: Locator,
+        sales: SalesInfo
+    ):
 
         print("Parsing sales...")
-
-        self.wait_until_loaded()
-
-        section = self.sales_section()
 
         metric_parser = MetricCardParser(section)
         navigator = CarouselNavigator(section)
 
         metrics = {}
 
-        # First page
+        # ---------------------------------------
+        # Metric Cards
+        # ---------------------------------------
+
         metrics.update(
             metric_parser.parse_visible()
         )
 
-        # Remaining carousel pages
         while navigator.move_next():
 
             metrics.update(
                 metric_parser.parse_visible()
             )
 
-        # -------------------------
+        # ---------------------------------------
         # Overview
-        # -------------------------
+        # ---------------------------------------
 
         sales.total_gmv = metrics.get(
             "GMV",
@@ -73,40 +72,24 @@ class SalesParser:
             ""
         )
 
-        # -------------------------
-        # Distributions
-        # -------------------------
+        # ---------------------------------------
+        # Distribution Charts
+        # ---------------------------------------
 
-        parser = DistributionParser(section)
+        distribution_parser = DistributionParser(
+            section
+        )
 
         sales.sales_channel_distribution = (
-            parser.parse(
+            distribution_parser.parse(
                 "GMV per sales channel"
             )
         )
 
         sales.category_distribution = (
-            parser.parse(
+            distribution_parser.parse(
                 "GMV by product category"
             )
         )
 
         print("✓ Sales parsed")
-
-    # ---------------------------------------------------------
-
-    def wait_until_loaded(self):
-
-        self.page.locator(
-            "text=GMV per customer"
-        ).wait_for(timeout=10000)
-
-    # ---------------------------------------------------------
-
-    def sales_section(self):
-
-        return (
-            self.page.locator("text=Sales")
-            .locator("..")
-            .locator("..")
-        )
