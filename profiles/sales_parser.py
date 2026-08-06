@@ -3,19 +3,19 @@ from playwright.sync_api import Page
 from profiles.models.sales_info import SalesInfo
 
 from profiles.helpers.metric_card_parser import MetricCardParser
-from profiles.helpers.parser_utils import ParserUtils
+from profiles.helpers.carousel_navigator import CarouselNavigator
+from profiles.helpers.distribution_parser import DistributionParser
 
 
 class SalesParser:
     """
-    Parses the Sales section.
+    Parses the complete Sales section.
 
-    Extracts:
+    Extracts
 
-        - GMV
-        - Items Sold
-        - GPM
-        - GMV per customer
+    - Overview metrics
+    - GMV by sales channel
+    - GMV by product category
     """
 
     def __init__(self, page: Page):
@@ -30,74 +30,66 @@ class SalesParser:
 
         self.wait_until_loaded()
 
-        cards = MetricCardParser(
-            self.page
-        ).parse()
+        section = self.sales_section()
 
-        # -------------------------------------
-        # GMV
-        # -------------------------------------
+        metric_parser = MetricCardParser(section)
+        navigator = CarouselNavigator(section)
 
-        sales.total_gmv = cards.get("GMV", "")
+        metrics = {}
 
-        if sales.total_gmv:
+        # First page
+        metrics.update(
+            metric_parser.parse_visible()
+        )
 
-            sales.total_gmv_value = (
-                ParserUtils.money_to_float(
-                    sales.total_gmv
-                )
+        # Remaining carousel pages
+        while navigator.move_next():
+
+            metrics.update(
+                metric_parser.parse_visible()
             )
 
-        # -------------------------------------
-        # Items Sold
-        # -------------------------------------
+        # -------------------------
+        # Overview
+        # -------------------------
 
-        sales.items_sold = cards.get(
+        sales.total_gmv = metrics.get(
+            "GMV",
+            ""
+        )
+
+        sales.items_sold = metrics.get(
             "Items sold",
             ""
         )
 
-        if sales.items_sold:
-
-            sales.items_sold_value = (
-                ParserUtils.count_to_int(
-                    sales.items_sold
-                )
-            )
-
-        # -------------------------------------
-        # GPM
-        # -------------------------------------
-
-        sales.gpm = cards.get(
+        sales.gpm = metrics.get(
             "GPM",
             ""
         )
 
-        if sales.gpm:
-
-            sales.gpm_value = (
-                ParserUtils.money_to_float(
-                    sales.gpm
-                )
-            )
-
-        # -------------------------------------
-        # GMV per Customer
-        # -------------------------------------
-
-        sales.gmv_per_customer = cards.get(
+        sales.gmv_per_customer = metrics.get(
             "GMV per customer",
             ""
         )
 
-        if sales.gmv_per_customer:
+        # -------------------------
+        # Distributions
+        # -------------------------
 
-            sales.gmv_per_customer_value = (
-                ParserUtils.money_to_float(
-                    sales.gmv_per_customer
-                )
+        parser = DistributionParser(section)
+
+        sales.sales_channel_distribution = (
+            parser.parse(
+                "GMV per sales channel"
             )
+        )
+
+        sales.category_distribution = (
+            parser.parse(
+                "GMV by product category"
+            )
+        )
 
         print("✓ Sales parsed")
 
@@ -108,3 +100,13 @@ class SalesParser:
         self.page.locator(
             "text=GMV per customer"
         ).wait_for(timeout=10000)
+
+    # ---------------------------------------------------------
+
+    def sales_section(self):
+
+        return (
+            self.page.locator("text=Sales")
+            .locator("..")
+            .locator("..")
+        )

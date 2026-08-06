@@ -44,13 +44,21 @@ def print_profile(profile):
 
     print()
     print("=" * 60)
-    print("SALES")
+    print("SALES DATA")
     print("=" * 60)
 
-    print("GMV               :", profile.sales.total_gmv)
-    print("Items Sold        :", profile.sales.items_sold)
-    print("GPM               :", profile.sales.gpm)
-    print("GMV per Customer  :", profile.sales.gmv_per_customer)
+    print("GMV                  :", profile.sales.total_gmv)
+    print("Items Sold           :", profile.sales.items_sold)
+    print("GPM                  :", profile.sales.gpm)
+    print("GMV / Customer       :", profile.sales.gmv_per_customer)
+
+    print()
+    print("Sales Channels")
+    print(profile.sales.sales_channel_distribution)
+
+    print()
+    print("Category Distribution")
+    print(profile.sales.category_distribution)
 
 
 # ---------------------------------------------------------

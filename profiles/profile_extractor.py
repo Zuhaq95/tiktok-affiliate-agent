@@ -4,6 +4,7 @@ from profiles.creator_profile import CreatorProfile
 
 from profiles.header_parser import HeaderParser
 from profiles.sales_parser import SalesParser
+from profiles.collaboration_parser import CollaborationParser
 
 
 class ProfileExtractor:
@@ -19,6 +20,7 @@ class ProfileExtractor:
 
         self.header_parser = HeaderParser(page)
         self.sales_parser = SalesParser(page)
+        self.collaboration_parser = CollaborationParser(page)
 
     def extract(self) -> CreatorProfile:
 
@@ -43,6 +45,14 @@ class ProfileExtractor:
 
         self.sales_parser.parse(
             profile.sales
+        )
+
+        # -------------------------------
+        # Collaboration
+        # -------------------------------
+
+        self.collaboration_parser.parse(
+            profile.collaboration
         )
 
         print("✓ Creator profile extracted.")

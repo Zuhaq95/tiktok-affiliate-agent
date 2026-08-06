@@ -1,51 +1,73 @@
 from playwright.sync_api import Locator
-import re
 
 
 class DistributionParser:
     """
-    Parses chart legends like:
+    Parses donut chart legends.
 
-    Video      93.41%
-    LIVE       6.59%
-
-    or
-
-    Textiles & Soft Furnishings   40.37%
-    Other                         28.06%
+    Example:
+        GMV per sales channel
+        GMV by product category
+        Gender
+        Age
     """
 
-    def __init__(self, container: Locator):
+    def __init__(self, section: Locator):
 
-        self.container = container
+        self.section = section
 
-    def parse(self) -> dict[str, float]:
+    # ---------------------------------------------------------
 
-        distribution = {}
+    def parse(self, title: str) -> dict[str, float]:
 
-        text = self.container.inner_text()
+        distributions = {}
 
-        for line in text.splitlines():
+        # Find the chart container by its title
+        chart = (
+            self.section
+            .locator(f"text={title}")
+            .locator("..")
+        )
 
-            line = line.strip()
+        spans = chart.locator("span")
 
-            if not line:
-                continue
+        texts = []
 
-            match = re.match(
-                r"(.+?)\s+([\d.]+)%$",
-                line
-            )
+        for i in range(spans.count()):
 
-            if not match:
-                continue
+            value = spans.nth(i).inner_text().strip()
 
-            label = match.group(1).strip()
+            if value:
+                texts.append(value)
 
-            percentage = float(
-                match.group(2)
-            )
+        # Legend usually appears as:
+        # Video
+        # 93.41%
+        # LIVE
+        # 6.59%
 
-            distribution[label] = percentage
+        i = 0
 
-        return distribution
+        while i < len(texts) - 1:
+
+            label = texts[i]
+
+            value = texts[i + 1]
+
+            if value.endswith("%"):
+
+                try:
+
+                    distributions[label] = float(
+                        value.replace("%", "")
+                    )
+
+                    i += 2
+                    continue
+
+                except ValueError:
+                    pass
+
+            i += 1
+
+        return distributions
