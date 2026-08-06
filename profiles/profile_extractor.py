@@ -6,6 +6,7 @@ from profiles.header_parser import HeaderParser
 from profiles.sales_parser import SalesParser
 from profiles.collaboration_parser import CollaborationParser
 from profiles.video_parser import VideoParser
+from profiles.live_parser import LiveParser
 
 from profiles.page_section_collector import PageSectionCollector
 
@@ -29,6 +30,8 @@ class ProfileExtractor:
         self.collaboration_parser = CollaborationParser()
 
         self.video_parser = VideoParser()
+
+        self.live_parser = LiveParser()
 
     # ---------------------------------------------------------
 
@@ -83,6 +86,15 @@ class ProfileExtractor:
         self.video_parser.parse(
             sections.video,
             profile.videos
+        )
+
+        # ---------------------------------------
+        # LIVE
+        # ---------------------------------------
+
+        self.live_parser.parse(
+            sections.live,
+            profile.live
         )
 
         print("✓ Creator profile extracted.")

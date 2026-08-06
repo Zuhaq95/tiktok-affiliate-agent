@@ -1,5 +1,7 @@
 # TikTok Affiliate Agent
 
+Last Updated: 2026-08-07
+
 ---
 
 # Project Goal
@@ -10,101 +12,123 @@ Workflow
 
 Search Creators
     ↓
-AI Rank
+AI Rank Creators
     ↓
-Open Creator
+Open Creator Profile
     ↓
-Extract Profile
+Extract Complete Profile
     ↓
 Store Structured Data
     ↓
 AI Recommendation Engine
 
+The project is designed to be modular, reusable, scalable and easy to maintain.
+
 ---
 
 # Current Architecture
 
-## Profile Extraction
-
+```
 ProfileExtractor
+        │
+        ▼
+PageSectionCollector
+        │
+        ▼
+PageSections
+        │
+        ├── HeaderParser
+        ├── SalesParser
+        ├── CollaborationParser
+        ├── VideoParser
+        ├── LiveParser
+        ├── FollowersParser
+        ├── TrendParser
+        ├── ExampleVideosParser
+        └── SimilarCreatorsParser
+```
 
-    HeaderParser
+PageSectionCollector discovers the page structure once.
 
-    PageSectionCollector
+Each parser receives only the section it owns.
 
-        ↓
-
-    SalesParser
-
-    CollaborationParser
-
-    VideoParser
-
-    LiveParser
-
-    FollowersParser
-
-    TrendParser
-
-Each parser owns exactly one page section.
+No parser searches the entire page anymore.
 
 ---
 
 # Folder Structure
 
+```
 profiles/
 
-    creator_profile.py
-
-    page_sections.py
-
-    page_section_collector.py
-
-    helpers/
-
-        metric_card_parser.py
-
-        carousel_navigator.py
-
-        distribution_parser.py
-
-        chart_parser.py
-
-        parser_utils.py
-
-    models/
-
-        header_info.py
-        sales_info.py
-        collaboration_info.py
-        video_info.py
-        followers_info.py
-        trend_info.py
-
-    header_parser.py
-
-    sales_parser.py
-
-    collaboration_parser.py
-
-    video_parser.py
-
-    live_parser.py
-
-    followers_parser.py
-
-    trend_parser.py
+│
+├── creator_profile.py
+│
+├── page_sections.py
+├── page_section_collector.py
+│
+├── helpers/
+│   ├── metric_card_parser.py
+│   ├── carousel_navigator.py
+│   ├── distribution_parser.py
+│   ├── chart_parser.py
+│   ├── video_card_parser.py
+│   └── parser_utils.py
+│
+├── models/
+│   ├── header_info.py
+│   ├── sales_info.py
+│   ├── collaboration_info.py
+│   ├── video_info.py
+│   ├── followers_info.py
+│   └── trend_info.py
+│
+├── header_parser.py
+├── sales_parser.py
+├── collaboration_parser.py
+├── video_parser.py
+├── live_parser.py
+├── followers_parser.py
+├── trend_parser.py
+├── example_videos_parser.py
+└── similar_creators_parser.py
+```
 
 ---
 
-# Core Helpers
+# Page Structure
+
+The Creator Details page currently contains 11 major white sections.
+
+| Index | Section |
+|------:|---------|
+| 1 | Header |
+| 2 | Navigation Tabs |
+| 3 | Sales |
+| 4 | Sales Charts |
+| 5 | Collaboration |
+| 6 | Video |
+| 7 | LIVE |
+| 8 | Followers |
+| 9 | Trends |
+|10 | Example Videos |
+|11 | Product Videos |
+
+PageSectionCollector validates these sections before parsing.
+
+---
+
+# Helper Classes
 
 ## MetricCardParser
 
 Responsibility
 
-- Parse visible metric cards
-- Never move carousel
+Parse only the visible metric cards.
+
+Never clicks buttons.
+
+Never moves the carousel.
 
 Used by
 
@@ -119,11 +143,23 @@ Used by
 
 Responsibility
 
-- Detect right arrow
-- Navigate carousel
-- Stop when no more pages exist
+Navigate horizontal metric carousels safely.
 
-Never parses data.
+Only clicks the carousel navigation button.
+
+Never clicks
+
+- Back button
+- Invite button
+- Header buttons
+- Sidebar buttons
+
+Used by
+
+- Sales
+- Collaboration
+- Video
+- LIVE
 
 ---
 
@@ -133,72 +169,140 @@ Responsibility
 
 Parse donut chart legends.
 
-Examples
+Uses TikTok semantic classes
+
+- pcm-pc-container
+- pcm-pc-legend-label
+- pcm-pc-legend-value
+
+Supported charts
 
 - GMV per Sales Channel
-- Product Categories
+- GMV by Product Category
 - Gender
 - Age
 
 ---
 
-## PageSectionCollector
+## ParserUtils
 
-Discovers all major white-card sections once.
+Provides reusable conversion helpers.
 
-Returns
+Current methods
 
-PageSections
+- money_to_float()
+- percent_to_float()
+- count_to_int()
+- extract_number()
 
-which contains
+---
 
-- Header
-- Navigation
-- Sales
-- Sales Charts
-- Collaboration
-- Video
-- LIVE
+## VideoCardParser
+
+Reserved for Example Videos parsing.
+
+Not implemented yet.
+
+---
+
+# Completed Modules
+
+## HeaderParser
+
+Status
+
+✅ Complete
+
+Extracts
+
+- Username
+- Display Name
+- Rating
+- Review Count
+- Categories
 - Followers
-- Trends
-- Example Videos
-- Product Videos
-
-No parser searches the page anymore.
-
----
-
-# Current Progress
-
-## Completed
-
-✅ Profile opener
-
-✅ Header parser
-
-✅ Sales parser
-
-✅ Collaboration parser
-
-✅ MetricCardParser
-
-✅ CarouselNavigator
-
-✅ DistributionParser
-
-✅ PageSectionCollector
+- MCN
+- Bio
+- Email
+- Website
 
 ---
 
-## In Progress
+## SalesParser
 
-None
+Status
+
+✅ Complete
+
+Extracts
+
+Overview Metrics
+
+- GMV
+- Items Sold
+- GPM
+- GMV per Customer
+
+Distribution Charts
+
+- GMV per Sales Channel
+- GMV by Product Category
+
+Uses
+
+- MetricCardParser
+- CarouselNavigator
+- DistributionParser
 
 ---
 
-## Remaining
+## CollaborationParser
 
-⬜ VideoParser
+Status
+
+✅ Complete
+
+Extracts
+
+- Estimated Post Rate
+- Average Commission Rate
+- Products
+- Brand Collaborations
+- Product Price Range
+
+Uses
+
+- MetricCardParser
+- CarouselNavigator
+
+---
+
+## VideoParser
+
+Status
+
+✅ Complete
+
+Extracts
+
+- Video GPM
+- Videos
+- Average Video Views
+- Average Engagement Rate
+- Average Likes
+- Average Comments
+- Average Shares
+
+Uses
+
+- MetricCardParser
+- CarouselNavigator
+
+---
+
+# Remaining Modules
+
+Analytics
 
 ⬜ LiveParser
 
@@ -206,7 +310,11 @@ None
 
 ⬜ TrendParser
 
+Content
+
 ⬜ ExampleVideosParser
+
+Discovery
 
 ⬜ SimilarCreatorsParser
 
@@ -214,7 +322,7 @@ None
 
 # Design Principles
 
-Every class has one responsibility.
+Each class has exactly one responsibility.
 
 Examples
 
@@ -226,68 +334,124 @@ SalesParser
 
 Parses Sales only.
 
+VideoParser
+
+Parses Video only.
+
 MetricCardParser
 
 Parses metric cards only.
 
 CarouselNavigator
 
-Moves carousel only.
+Navigates carousel only.
+
+DistributionParser
+
+Parses donut chart legends only.
 
 PageSectionCollector
 
-Discovers page structure only.
+Discovers page layout only.
 
 ---
 
-# Important Discoveries
+# Major Refactoring Completed
 
-Creator Details page consists of 11 major white sections.
+Completed
 
-1 Header
+✅ Introduced PageSectionCollector
 
-2 Navigation
+✅ Introduced PageSections
 
-3 Sales
+✅ Removed page-wide searching from parsers
 
-4 Sales Charts
+✅ Scoped every parser to its own section
 
-5 Collaboration
+✅ Replaced unsafe button searching with CarouselNavigator
 
-6 Video
+✅ DistributionParser rewritten using semantic TikTok CSS classes
 
-7 LIVE
+✅ Sales Charts separated from Sales Metrics
 
-8 Followers
+Architecture is now considered stable.
 
-9 Trends
-
-10 Example Videos
-
-11 Product Videos
-
-PageSectionCollector maps these into PageSections.
+No further architectural changes are planned unless TikTok changes the page layout.
 
 ---
 
-# Known Issues
+# Current Progress
 
-None.
+Infrastructure
+
+✅ Complete
+
+Profile
+
+✅ Header
+
+✅ Sales
+
+✅ Collaboration
+
+✅ Video
+
+Analytics
+
+⬜ LIVE
+
+⬜ Followers
+
+⬜ Trends
+
+Content
+
+⬜ Example Videos
+
+Discovery
+
+⬜ Similar Creators
+
+Overall Progress
+
+████████████░░░░░░░░░░
+
+Approximately 50% complete.
 
 ---
 
 # Next Task
 
-Implement VideoParser using
+Implement LiveParser.
 
-MetricCardParser
+Expected implementation
 
-+
+```
+ProfileExtractor
+        │
+        ▼
+sections.live
+        │
+        ▼
+LiveParser
+        │
+        ├── MetricCardParser
+        └── CarouselNavigator
+        │
+        ▼
+LiveInfo
+```
 
-CarouselNavigator
+LiveParser should follow the same architecture as VideoParser.
 
-+
+No new helper classes are expected.
 
-PageSectionCollector
+---
 
-Architecture already supports it.
+# Notes
+
+This document is the single source of truth for the project.
+
+Whenever a major milestone is completed, regenerate this file instead of patching individual sections.
+
+Future conversations should begin by loading this document before continuing development.
