@@ -5,11 +5,12 @@ class DistributionParser:
     """
     Parses donut chart legends.
 
-    Example:
-        GMV per sales channel
-        GMV by product category
-        Gender
-        Age
+    Supported charts:
+
+        - GMV per sales channel
+        - GMV by product category
+        - Gender
+        - Age
     """
 
     def __init__(self, section: Locator):
@@ -18,56 +19,86 @@ class DistributionParser:
 
     # ---------------------------------------------------------
 
-    def parse(self, title: str) -> dict[str, float]:
+    def parse(
+        self,
+        title: str
+    ) -> dict[str, float]:
+
+        print()
+        print(f"Parsing distribution: {title}")
 
         distributions = {}
 
-        # Find the chart container by its title
-        chart = (
-            self.section
-            .locator(f"text={title}")
-            .locator("..")
+        heading = self.section.get_by_text(
+            title,
+            exact=True
         )
 
-        spans = chart.locator("span")
+        if heading.count() == 0:
 
-        texts = []
+            print(f"✗ '{title}' not found")
 
-        for i in range(spans.count()):
+            return distributions
 
-            value = spans.nth(i).inner_text().strip()
+        # -----------------------------------------------------
+        # Locate the chart container
+        # -----------------------------------------------------
 
-            if value:
-                texts.append(value)
+        container = heading.first.locator(
+            "xpath=ancestor::div[contains(@class,'pcm-pc-container')]"
+        )
 
-        # Legend usually appears as:
-        # Video
-        # 93.41%
-        # LIVE
-        # 6.59%
+        if container.count() == 0:
 
-        i = 0
+            print("✗ Chart container not found")
 
-        while i < len(texts) - 1:
+            return distributions
 
-            label = texts[i]
+        # -----------------------------------------------------
+        # Legend labels
+        # -----------------------------------------------------
 
-            value = texts[i + 1]
+        labels = container.locator(
+            ".pcm-pc-legend-label .ecom-data-overflow-text-content"
+        )
 
-            if value.endswith("%"):
+        # -----------------------------------------------------
+        # Legend values
+        # -----------------------------------------------------
 
-                try:
+        values = container.locator(
+            ".pcm-pc-legend-value .ecom-data-overflow-text-content"
+        )
 
-                    distributions[label] = float(
-                        value.replace("%", "")
-                    )
+        print(
+            f"Found {labels.count()} labels and {values.count()} values"
+        )
 
-                    i += 2
-                    continue
+        count = min(
+            labels.count(),
+            values.count()
+        )
 
-                except ValueError:
-                    pass
+        for i in range(count):
 
-            i += 1
+            label = labels.nth(i).inner_text().strip()
+
+            value = values.nth(i).inner_text().strip()
+
+            try:
+
+                percent = float(
+                    value.replace("%", "")
+                )
+
+                distributions[label] = percent
+
+                print(
+                    f"   {label} = {percent}%"
+                )
+
+            except ValueError:
+
+                continue
 
         return distributions

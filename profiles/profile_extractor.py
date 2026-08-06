@@ -60,6 +60,7 @@ class ProfileExtractor:
 
         self.sales_parser.parse(
             sections.sales,
+            sections.sales_charts,
             profile.sales
         )
 

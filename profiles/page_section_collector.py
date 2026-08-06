@@ -1,3 +1,5 @@
+from email.mime import text
+
 from playwright.sync_api import Locator, Page
 
 from profiles.page_sections import PageSections
@@ -121,14 +123,26 @@ TikTok page layout may have changed.
     # ---------------------------------------------------------
 
     def assert_contains(
-        self,
-        section: Locator,
-        expected: str
+    self,
+    section: Locator,
+    expected: str
     ):
 
         text = section.inner_text()
 
-        if expected not in text:
+        if expected.lower() not in text.lower():
+
+            raise RuntimeError(
+            f"""
+            Expected section containing:
+
+                {expected}
+
+            Instead found:
+
+            {text[:300]}
+            """
+                    )
 
             raise RuntimeError(
                 f"""

@@ -16,21 +16,27 @@ class SalesParser:
         - Parse sales distributions
 
     It never searches the page.
-    It only parses the section it is given.
+    It only parses the sections it is given.
     """
 
     # ---------------------------------------------------------
 
     def parse(
         self,
-        section: Locator,
+        metrics_section: Locator,
+        charts_section: Locator,
         sales: SalesInfo
     ):
 
         print("Parsing sales...")
 
-        metric_parser = MetricCardParser(section)
-        navigator = CarouselNavigator(section)
+        metric_parser = MetricCardParser(
+            metrics_section
+        )
+
+        navigator = CarouselNavigator(
+            metrics_section
+        )
 
         metrics = {}
 
@@ -47,6 +53,8 @@ class SalesParser:
             metrics.update(
                 metric_parser.parse_visible()
             )
+
+        print(f"✓ Parsed {len(metrics)} overview metrics")
 
         # ---------------------------------------
         # Overview
@@ -77,7 +85,7 @@ class SalesParser:
         # ---------------------------------------
 
         distribution_parser = DistributionParser(
-            section
+            charts_section
         )
 
         sales.sales_channel_distribution = (
@@ -86,10 +94,18 @@ class SalesParser:
             )
         )
 
+        print(
+            f"✓ Parsed {len(sales.sales_channel_distribution)} sales channel entries"
+        )
+
         sales.category_distribution = (
             distribution_parser.parse(
                 "GMV by product category"
             )
+        )
+
+        print(
+            f"✓ Parsed {len(sales.category_distribution)} product category entries"
         )
 
         print("✓ Sales parsed")
