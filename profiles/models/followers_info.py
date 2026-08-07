@@ -1,13 +1,18 @@
 from dataclasses import dataclass, field
-
-
 @dataclass
 class FollowersInfo:
 
-    male_percentage: float = 0
+    gender_distribution: dict[str, float] = field(
+        default_factory=dict
+    )
 
-    female_percentage: float = 0
+    age_distribution: dict[str, float] = field(
+        default_factory=dict
+    )
 
-    top_locations: list[str] = field(default_factory=list)
-
-    age_groups: dict[str, float] = field(default_factory=dict)
+    # TODO:
+    # TikTok renders Top 5 locations on a canvas.
+    # A future CanvasChartParser will populate this.
+    top_locations: list[str] = field(
+        default_factory=list
+    )
