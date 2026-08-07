@@ -10,6 +10,8 @@ from profiles.live_parser import LiveParser
 from profiles.followers_parser import FollowersParser
 
 from profiles.page_section_collector import PageSectionCollector
+from profiles.example_videos_parser import ExampleVideosParser
+from profiles.product_videos_parser import ProductVideosParser
 
 
 class ProfileExtractor:
@@ -35,6 +37,10 @@ class ProfileExtractor:
         self.live_parser = LiveParser()
 
         self.followers_parser = FollowersParser()
+
+        self.example_videos_parser = ExampleVideosParser()
+
+        self.product_videos_parser = ProductVideosParser()
 
     # ---------------------------------------------------------
 
@@ -106,6 +112,27 @@ class ProfileExtractor:
             sections.followers,
             profile.followers
         )
+
+        # ---------------------------------------
+                # example videos
+        # ---------------------------------------
+
+
+        profile.example_videos = (
+            self.example_videos_parser.parse(
+            sections.example_videos
+        ))
+        # ---------------------------------------
+                        # Product  videos
+        # ---------------------------------------
+
+        profile.product_videos = (
+            self.product_videos_parser.parse(
+                sections.product_videos
+            )
+        )
+        
+
         
         print("✓ Creator profile extracted.")
 

@@ -7,6 +7,7 @@ from profiles.models.video_info import VideoInfo
 from profiles.models.live_info import LiveInfo
 from profiles.models.followers_info import FollowersInfo
 from profiles.models.trend_info import TrendInfo
+from profiles.models.video_card_info import VideoCardInfo
 
 
 @dataclass
@@ -25,3 +26,15 @@ class CreatorProfile:
     followers: FollowersInfo = field(default_factory=FollowersInfo)
 
     trends: TrendInfo = field(default_factory=TrendInfo)
+
+    example_videos: list[VideoCardInfo] = field(
+    default_factory=list
+    )
+
+    product_videos: list[VideoCardInfo] = field(
+        default_factory=list
+    )
+
+    product_videos: list[VideoCardInfo] = field(
+    default_factory=list
+    )

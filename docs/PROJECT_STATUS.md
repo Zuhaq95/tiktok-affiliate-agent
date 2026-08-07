@@ -1,219 +1,22 @@
-# TikTok Affiliate Agent
+# TikTok Affiliate Agent - Project Status
 
 Last Updated: 2026-08-07
 
 ---
 
-# Project Goal
+# Overall Progress
 
-Build a fully automated TikTok Shop Affiliate Creator Discovery Agent.
+Approximately 75% Complete
 
-Workflow
-
-Search Creators
-    ↓
-AI Rank Creators
-    ↓
-Open Creator Profile
-    ↓
-Extract Complete Profile
-    ↓
-Store Structured Data
-    ↓
-AI Recommendation Engine
-
-The project is designed to be modular, reusable, scalable and easy to maintain.
+Core profile extraction architecture is complete and stable.
 
 ---
 
-# Current Architecture
+# Completed Sections
 
-```
-ProfileExtractor
-        │
-        ▼
-PageSectionCollector
-        │
-        ▼
-PageSections
-        │
-        ├── HeaderParser
-        ├── SalesParser
-        ├── CollaborationParser
-        ├── VideoParser
-        ├── LiveParser
-        ├── FollowersParser
-        ├── TrendParser
-        ├── ExampleVideosParser
-        └── SimilarCreatorsParser
-```
+## Header ✅
 
-PageSectionCollector discovers the page structure once.
-
-Each parser receives only the section it owns.
-
-No parser searches the entire page anymore.
-
----
-
-# Folder Structure
-
-```
-profiles/
-
-│
-├── creator_profile.py
-│
-├── page_sections.py
-├── page_section_collector.py
-│
-├── helpers/
-│   ├── metric_card_parser.py
-│   ├── carousel_navigator.py
-│   ├── distribution_parser.py
-│   ├── chart_parser.py
-│   ├── video_card_parser.py
-│   └── parser_utils.py
-│
-├── models/
-│   ├── header_info.py
-│   ├── sales_info.py
-│   ├── collaboration_info.py
-│   ├── video_info.py
-│   ├── followers_info.py
-│   └── trend_info.py
-│
-├── header_parser.py
-├── sales_parser.py
-├── collaboration_parser.py
-├── video_parser.py
-├── live_parser.py
-├── followers_parser.py
-├── trend_parser.py
-├── example_videos_parser.py
-└── similar_creators_parser.py
-```
-
----
-
-# Page Structure
-
-The Creator Details page currently contains 11 major white sections.
-
-| Index | Section |
-|------:|---------|
-| 1 | Header |
-| 2 | Navigation Tabs |
-| 3 | Sales |
-| 4 | Sales Charts |
-| 5 | Collaboration |
-| 6 | Video |
-| 7 | LIVE |
-| 8 | Followers |
-| 9 | Trends |
-|10 | Example Videos |
-|11 | Product Videos |
-
-PageSectionCollector validates these sections before parsing.
-
----
-
-# Helper Classes
-
-## MetricCardParser
-
-Responsibility
-
-Parse only the visible metric cards.
-
-Never clicks buttons.
-
-Never moves the carousel.
-
-Used by
-
-- Sales
-- Collaboration
-- Video
-- LIVE
-
----
-
-## CarouselNavigator
-
-Responsibility
-
-Navigate horizontal metric carousels safely.
-
-Only clicks the carousel navigation button.
-
-Never clicks
-
-- Back button
-- Invite button
-- Header buttons
-- Sidebar buttons
-
-Used by
-
-- Sales
-- Collaboration
-- Video
-- LIVE
-
----
-
-## DistributionParser
-
-Responsibility
-
-Parse donut chart legends.
-
-Uses TikTok semantic classes
-
-- pcm-pc-container
-- pcm-pc-legend-label
-- pcm-pc-legend-value
-
-Supported charts
-
-- GMV per Sales Channel
-- GMV by Product Category
-- Gender
-- Age
-
----
-
-## ParserUtils
-
-Provides reusable conversion helpers.
-
-Current methods
-
-- money_to_float()
-- percent_to_float()
-- count_to_int()
-- extract_number()
-
----
-
-## VideoCardParser
-
-Reserved for Example Videos parsing.
-
-Not implemented yet.
-
----
-
-# Completed Modules
-
-## HeaderParser
-
-Status
-
-✅ Complete
-
-Extracts
+Extracted
 
 - Username
 - Display Name
@@ -223,18 +26,16 @@ Extracts
 - Followers
 - MCN
 - Bio
-- Email
-- Website
+- Email (if present)
+- Website (if present)
+
+Parser
+
+HeaderParser
 
 ---
 
-## SalesParser
-
-Status
-
-✅ Complete
-
-Extracts
+## Sales ✅
 
 Overview Metrics
 
@@ -248,21 +49,21 @@ Distribution Charts
 - GMV per Sales Channel
 - GMV by Product Category
 
-Uses
+Parser
+
+SalesParser
+
+Helpers
 
 - MetricCardParser
-- CarouselNavigator
 - DistributionParser
+- CarouselNavigator
 
 ---
 
-## CollaborationParser
+## Collaboration ✅
 
-Status
-
-✅ Complete
-
-Extracts
+Metrics
 
 - Estimated Post Rate
 - Average Commission Rate
@@ -270,20 +71,22 @@ Extracts
 - Brand Collaborations
 - Product Price Range
 
-Uses
+Supports horizontal carousel navigation.
+
+Parser
+
+CollaborationParser
+
+Helpers
 
 - MetricCardParser
 - CarouselNavigator
 
 ---
 
-## VideoParser
+## Video ✅
 
-Status
-
-✅ Complete
-
-Extracts
+Metrics
 
 - Video GPM
 - Videos
@@ -293,165 +96,197 @@ Extracts
 - Average Comments
 - Average Shares
 
-Uses
+Supports carousel navigation.
 
-- MetricCardParser
-- CarouselNavigator
-
----
-
-# Remaining Modules
-
-Analytics
-
-⬜ LiveParser
-
-⬜ FollowersParser
-
-⬜ TrendParser
-
-Content
-
-⬜ ExampleVideosParser
-
-Discovery
-
-⬜ SimilarCreatorsParser
-
----
-
-# Design Principles
-
-Each class has exactly one responsibility.
-
-Examples
-
-ProfileExtractor
-
-Coordinates extraction only.
-
-SalesParser
-
-Parses Sales only.
+Parser
 
 VideoParser
 
-Parses Video only.
+---
 
-MetricCardParser
+## LIVE ✅
 
-Parses metric cards only.
+Metrics
 
-CarouselNavigator
+- LIVE GPM
+- LIVE Streams
+- Average LIVE Views
+- Average Engagement Rate
+- Average Likes
+- Average Comments
+- Average Shares
 
-Navigates carousel only.
+Supports carousel navigation.
 
-DistributionParser
+Parser
 
-Parses donut chart legends only.
-
-PageSectionCollector
-
-Discovers page layout only.
+LiveParser
 
 ---
 
-# Major Refactoring Completed
+## Followers ✅ (Partial)
 
 Completed
 
-✅ Introduced PageSectionCollector
+Gender Distribution
 
-✅ Introduced PageSections
+Age Distribution
 
-✅ Removed page-wide searching from parsers
+Pending
 
-✅ Scoped every parser to its own section
+Top 5 Locations
 
-✅ Replaced unsafe button searching with CarouselNavigator
+Reason
 
-✅ DistributionParser rewritten using semantic TikTok CSS classes
+TikTok renders the location chart entirely on a canvas.
+There are no DOM elements available for labels or percentages.
 
-✅ Sales Charts separated from Sales Metrics
+Current implementation intentionally skips this section.
 
-Architecture is now considered stable.
+Parser
 
-No further architectural changes are planned unless TikTok changes the page layout.
+FollowersParser
 
----
+Helpers
 
-# Current Progress
-
-Infrastructure
-
-✅ Complete
-
-Profile
-
-✅ Header
-
-✅ Sales
-
-✅ Collaboration
-
-✅ Video
-
-Analytics
-
-⬜ LIVE
-
-⬜ Followers
-
-⬜ Trends
-
-Content
-
-⬜ Example Videos
-
-Discovery
-
-⬜ Similar Creators
-
-Overall Progress
-
-████████████░░░░░░░░░░
-
-Approximately 50% complete.
+- DistributionParser
+- LocationChartParser
 
 ---
 
-# Next Task
+# Shared Helper Classes
 
-Implement LiveParser.
+HeaderParser
 
-Expected implementation
+MetricCardParser
 
-```
+CarouselNavigator
+
+DistributionParser
+
+LocationChartParser
+
+ParserUtils
+
+---
+
+# Page Architecture
+
 ProfileExtractor
-        │
-        ▼
-sections.live
-        │
-        ▼
-LiveParser
-        │
-        ├── MetricCardParser
-        └── CarouselNavigator
-        │
-        ▼
-LiveInfo
-```
 
-LiveParser should follow the same architecture as VideoParser.
+↓
 
-No new helper classes are expected.
+PageSectionCollector
+
+↓
+
+PageSections
+
+↓
+
+Individual Parsers
+
+Each parser receives only its own section.
+
+No parser searches the page directly.
+
+This architecture keeps the code modular and resilient to layout changes.
 
 ---
 
-# Notes
+# Remaining Work
 
-This document is the single source of truth for the project.
+## High Priority
 
-Whenever a major milestone is completed, regenerate this file instead of patching individual sections.
+### Trends
 
-Future conversations should begin by loading this document before continuing development.
+Need to parse
+
+- GMV
+- Items Sold
+- Followers
+- Video Views
+- Engagement Rate
+
+---
+
+### Example Videos
+
+Need to extract
+
+- Thumbnail
+- Caption
+- Views
+- Likes
+- Publish Date
+- TikTok URL
+
+Reusable helper already created
+
+VideoCardParser
+
+---
+
+### Videos With Product
+
+Very similar to Example Videos.
+
+Should reuse VideoCardParser.
+
+---
+
+### Similar Creators
+
+Need parser.
+
+---
+
+# Future Improvements
+
+CanvasChartParser
+
+Purpose
+
+Parse charts rendered entirely on HTML canvas.
+
+Would support
+
+- Followers Top 5 Locations
+- Future canvas-only charts
+
+Not required for MVP.
+
+---
+
+# Known Limitations
+
+Followers Top 5 Locations
+
+Current Status
+
+Not Parsed
+
+Reason
+
+Rendered directly on HTML canvas.
+
+No DOM elements exist for
+
+- Labels
+- Percentages
+
+Would require canvas hover automation.
+
+Deferred intentionally.
+
+---
+
+# Current Project Health
+
+Architecture Stable
+
+Reusable Components Stable
+
+Profile Extraction Stable
+
+Ready for Remaining Parsers
