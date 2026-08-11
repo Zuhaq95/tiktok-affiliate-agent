@@ -12,6 +12,7 @@ from profiles.followers_parser import FollowersParser
 from profiles.page_section_collector import PageSectionCollector
 from profiles.example_videos_parser import ExampleVideosParser
 from profiles.product_videos_parser import ProductVideosParser
+from profiles.trend_parser import TrendParser
 
 
 class ProfileExtractor:
@@ -22,9 +23,15 @@ class ProfileExtractor:
     receives only the section it is responsible for parsing.
     """
 
-    def __init__(self, page: Page):
+    def __init__(
+    self,
+    page: Page,
+    trend_data=None
+    ):
 
         self.page = page
+
+        self.trend_data = trend_data
 
         self.header_parser = HeaderParser(page)
 
@@ -38,9 +45,13 @@ class ProfileExtractor:
 
         self.followers_parser = FollowersParser()
 
+        self.trend_parser = TrendParser()
+
         self.example_videos_parser = ExampleVideosParser()
 
         self.product_videos_parser = ProductVideosParser()
+
+        
 
     # ---------------------------------------------------------
 
@@ -52,6 +63,11 @@ class ProfileExtractor:
         print("=" * 60)
 
         profile = CreatorProfile()
+
+        print(
+            "Trend data records:",
+            len(self.trend_data or [])
+        )
 
         # ---------------------------------------
         # Header
@@ -112,6 +128,34 @@ class ProfileExtractor:
             sections.followers,
             profile.followers
         )
+        # ---------------------------------------
+        # trends
+        # ---------------------------------------
+
+        self.trend_parser.parse(
+            self.trend_data,
+            profile.trends
+        )
+        print()
+        print("=" * 60)
+        print("TREND DATA")
+        print("=" * 60)
+
+        print("GMV:")
+        print(profile.trends.gmv_trend)
+
+        print("Units Sold:")
+        print(profile.trends.units_sold_trend)
+
+        print("Followers:")
+        print(profile.trends.followers_trend)
+
+        print("Video Views:")
+        print(profile.trends.video_views_trend)
+
+        print("Engagement:")
+        print(profile.trends.engagement_trend)
+
 
         # ---------------------------------------
                 # example videos

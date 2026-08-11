@@ -69,7 +69,7 @@ def main():
 
     campaign = Campaign(
         name="UK Bedding",
-        keyword="Mattress Topper",
+        keyword="Box Stitched Duvet",
         category="Textiles & Soft Furnishings",
         subcategory="Bedding",
         content_language="English",
@@ -185,10 +185,13 @@ def main():
         print("\nOpening first creator...\n")
 
         profile_page = opener.open(
-            search_results[0]
+             search_results[0]
         )
 
-        extractor = ProfileExtractor(profile_page)
+        extractor = ProfileExtractor(
+            profile_page,
+            trend_data=opener.get_trend_data()
+        )
 
         profile = extractor.extract()
 
