@@ -13,6 +13,7 @@ class VideoCardInfo:
     # ---------------------------------------
 
     thumbnail_url: str = ""
+    video_id: str = ""
 
     # ---------------------------------------
     # Content

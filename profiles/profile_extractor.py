@@ -163,17 +163,20 @@ class ProfileExtractor:
 
 
         profile.example_videos = (
-            self.example_videos_parser.parse(
-            sections.example_videos
-        ))
+        self.example_videos_parser.parse(
+            sections.example_videos,
+            self.page
+        )
+        )
         # ---------------------------------------
                         # Product  videos
         # ---------------------------------------
 
         profile.product_videos = (
-            self.product_videos_parser.parse(
-                sections.product_videos
-            )
+        self.product_videos_parser.parse(
+            sections.product_videos,
+            self.page
+        )
         )
         
 

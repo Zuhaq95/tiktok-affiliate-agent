@@ -194,6 +194,60 @@ def main():
         )
 
         profile = extractor.extract()
+        # ----------------------------------------
+        # TEST VIDEO "View video on TikTok"
+        # ----------------------------------------
+
+        print()
+        print("=" * 60)
+        print("TESTING VIDEO BUTTON")
+        print("=" * 60)
+
+        example_section = profile_page.locator(
+            "div.bg-white"
+        ).nth(9)
+
+        button = example_section.get_by_text(
+            "View video on TikTok",
+            exact=True
+        ).first
+
+        print("Button count:", button.count())
+
+        if button.count() == 0:
+
+            print("❌ View video on TikTok button not found")
+
+        else:
+
+            print("✓ View video on TikTok button found")
+
+            try:
+
+                with profile_page.expect_popup(
+                    timeout=5000
+                ) as popup_info:
+
+                    button.click()
+
+                video_page = popup_info.value
+
+                print("✓ Popup opened")
+
+                print()
+                print("Video URL:")
+                print(video_page.url)
+                video_page.close()
+
+                print("✓ Popup closed")
+
+            except Exception as ex:
+
+                print()
+                print("❌ No popup opened")
+                print(type(ex).__name__)
+                print(ex)
+
 
 
 

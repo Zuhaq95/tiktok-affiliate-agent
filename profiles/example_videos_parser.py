@@ -1,4 +1,4 @@
-from playwright.sync_api import Locator
+from playwright.sync_api import Locator, Page
 
 from profiles.models.video_card_info import VideoCardInfo
 
@@ -22,8 +22,9 @@ class ExampleVideosParser:
     # ---------------------------------------------------------
 
     def parse(
-        self,
-        section: Locator
+    self,
+    section: Locator,
+    page: Page
     ) -> list[VideoCardInfo]:
 
         print("Parsing example videos...")
@@ -45,7 +46,8 @@ class ExampleVideosParser:
             print(f"Parsing card {i + 1}")
 
             video = parser.parse(
-                cards.nth(i)
+                cards.nth(i),
+                page
             )
 
             videos.append(video)

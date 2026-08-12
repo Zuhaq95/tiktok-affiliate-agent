@@ -1,4 +1,4 @@
-from playwright.sync_api import Locator
+from playwright.sync_api import Locator, Page
 
 from profiles.models.video_card_info import VideoCardInfo
 
@@ -9,7 +9,7 @@ class ProductVideosParser:
     """
     Parses the Videos with Product section.
 
-    Responsibility
+    Responsibility:
 
         - Find every product video card
         - Parse each card using VideoCardParser
@@ -23,7 +23,8 @@ class ProductVideosParser:
 
     def parse(
         self,
-        section: Locator
+        section: Locator,
+        page: Page
     ) -> list[VideoCardInfo]:
 
         print("Parsing product videos...")
@@ -45,15 +46,30 @@ class ProductVideosParser:
             print(f"Parsing card {i + 1}")
 
             video = parser.parse(
-                cards.nth(i)
+                cards.nth(i),
+                page
             )
 
             videos.append(video)
 
-            print(f"   Caption : {video.caption[:50]}")
-            print(f"   Views   : {video.views}")
-            print(f"   Likes   : {video.likes}")
+            print(
+                f"   Caption : {video.caption[:50]}"
+            )
 
-        print(f"✓ Parsed {len(videos)} product videos")
+            print(
+                f"   Views   : {video.views}"
+            )
+
+            print(
+                f"   Likes   : {video.likes}"
+            )
+
+            print(
+                f"   TikTok URL : {video.tiktok_url}"
+            )
+
+        print(
+            f"✓ Parsed {len(videos)} product videos"
+        )
 
         return videos

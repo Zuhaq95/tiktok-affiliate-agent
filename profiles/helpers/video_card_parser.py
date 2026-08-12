@@ -1,4 +1,6 @@
-from playwright.sync_api import Locator
+from urllib.parse import urlparse, parse_qs
+
+from playwright.sync_api import Locator, Page
 
 from profiles.models.video_card_info import VideoCardInfo
 from profiles.helpers.parser_utils import ParserUtils
@@ -8,24 +10,22 @@ class VideoCardParser:
     """
     Parses a single video card.
 
-    Used by
-
+    Used by:
         - ExampleVideosParser
         - ProductVideosParser
     """
 
-    # ---------------------------------------------------------
-
     def parse(
         self,
-        card: Locator
+        card: Locator,
+        page: Page
     ) -> VideoCardInfo:
 
         video = VideoCardInfo()
 
-        # ---------------------------------------
-        # Thumbnail
-        # ---------------------------------------
+        # ---------------------------------------------------------
+        # Thumbnail & Video ID
+        # ---------------------------------------------------------
 
         image = card.locator(
             "img[alt='video thumbnail']"
@@ -34,12 +34,27 @@ class VideoCardParser:
         if image.count():
 
             video.thumbnail_url = (
-                image.get_attribute("src") or ""
+                image.first.get_attribute("src") or ""
             )
 
-        # ---------------------------------------
+            if video.thumbnail_url:
+
+                parsed_url = urlparse(
+                    video.thumbnail_url
+                )
+
+                query_params = parse_qs(
+                    parsed_url.query
+                )
+
+                video.video_id = (
+                    query_params
+                    .get("VideoID", [""])[0]
+                )
+
+        # ---------------------------------------------------------
         # Caption
-        # ---------------------------------------
+        # ---------------------------------------------------------
 
         caption = card.locator(
             ".text-overflow-muli-2"
@@ -48,12 +63,14 @@ class VideoCardParser:
         if caption.count():
 
             video.caption = (
-                caption.first.inner_text().strip()
+                caption.first
+                .inner_text()
+                .strip()
             )
 
-        # ---------------------------------------
+        # ---------------------------------------------------------
         # Release Time
-        # ---------------------------------------
+        # ---------------------------------------------------------
 
         release = card.locator(
             "text=Release Time:"
@@ -71,15 +88,17 @@ class VideoCardParser:
                 .strip()
             )
 
-        # ---------------------------------------
-        # Views
-        # ---------------------------------------
+        # ---------------------------------------------------------
+        # Views & Likes
+        # ---------------------------------------------------------
 
         metrics = card.locator(
             ".font-semibold"
         )
 
-        if metrics.count() >= 1:
+        metrics_count = metrics.count()
+
+        if metrics_count >= 1:
 
             video.views = (
                 metrics.nth(0)
@@ -93,11 +112,7 @@ class VideoCardParser:
                 )
             )
 
-        # ---------------------------------------
-        # Likes
-        # ---------------------------------------
-
-        if metrics.count() >= 2:
+        if metrics_count >= 2:
 
             video.likes = (
                 metrics.nth(1)
@@ -111,26 +126,43 @@ class VideoCardParser:
                 )
             )
 
-        # ---------------------------------------
-        # TikTok Link
-        # ---------------------------------------
+        # ---------------------------------------------------------
+        # TikTok URL
+        # ---------------------------------------------------------
 
-        links = card.locator("a")
+        view_button = card.get_by_text(
+            "View video on TikTok",
+            exact=True
+        )
 
-        if links.count():
+        if view_button.count():
 
-            video.tiktok_url = (
-                links.first.get_attribute("href")
-                or ""
-            )
+            try:
 
-        # ---------------------------------------
-        # Products Button
-        # ---------------------------------------
+                with page.expect_popup(
+                    timeout=5000
+                ) as popup_info:
+
+                    view_button.first.click()
+
+                video_page = popup_info.value
+
+                video.tiktok_url = video_page.url
+
+                video_page.close()
+
+            except Exception:
+
+                video.tiktok_url = ""
+
+        # ---------------------------------------------------------
+        # Products
+        # ---------------------------------------------------------
 
         video.has_products = (
             card.get_by_text(
-                "View products"
+                "View products",
+                exact=True
             ).count() > 0
         )
 

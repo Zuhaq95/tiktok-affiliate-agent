@@ -13,37 +13,11 @@ class TrendChartParser:
 
     def parse(self, stats: dict) -> dict:
 
-        print()
-        print("RAW TREND POINT")
-        print("start_timestamp:", stats.get("start_timestamp"))
-        print("end_timestamp  :", stats.get("end_timestamp"))
+        
 
         profile = stats.get("profile", {})
 
-        print(
-                "GMV:",
-                profile.get("trend_gmv")
-            )
-
-        print(
-                "Units:",
-                profile.get("trend_units_sold")
-            )
-
-        print(
-            "Followers:",
-            profile.get("trend_follower")
-        )
-
-        print(
-            "Views:",
-            profile.get("trend_video_play_cnt")
-        )
-
-        print(
-            "Engagement:",
-            profile.get("trend_video_engagement_rate")
-        )
+        
 
         return {
             "gmv": self._parse_gmv(

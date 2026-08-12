@@ -1,12 +1,12 @@
 # TikTok Affiliate Agent - Project Status
 
-Last Updated: 2026-08-07
+Last Updated: 2026-08-12
 
 ---
 
 # Overall Progress
 
-Approximately 75% Complete
+Approximately 80% Complete
 
 Core profile extraction architecture is complete and stable.
 
@@ -111,10 +111,10 @@ Metrics
 - LIVE GPM
 - LIVE Streams
 - Average LIVE Views
-- Average Engagement Rate
-- Average Likes
-- Average Comments
-- Average Shares
+- Average LIVE Engagement Rate
+- Average LIVE Likes
+- Average LIVE Comments
+- Average LIVE Shares
 
 Supports carousel navigation.
 
@@ -154,139 +154,11 @@ Helpers
 
 ---
 
-# Shared Helper Classes
+## Trends ✅
 
-HeaderParser
+Trend data is extracted directly from TikTok's Creator Profile API.
 
-MetricCardParser
+API
 
-CarouselNavigator
-
-DistributionParser
-
-LocationChartParser
-
-ParserUtils
-
----
-
-# Page Architecture
-
-ProfileExtractor
-
-↓
-
-PageSectionCollector
-
-↓
-
-PageSections
-
-↓
-
-Individual Parsers
-
-Each parser receives only its own section.
-
-No parser searches the page directly.
-
-This architecture keeps the code modular and resilient to layout changes.
-
----
-
-# Remaining Work
-
-## High Priority
-
-### Trends
-
-Need to parse
-
-- GMV
-- Items Sold
-- Followers
-- Video Views
-- Engagement Rate
-
----
-
-### Example Videos
-
-Need to extract
-
-- Thumbnail
-- Caption
-- Views
-- Likes
-- Publish Date
-- TikTok URL
-
-Reusable helper already created
-
-VideoCardParser
-
----
-
-### Videos With Product
-
-Very similar to Example Videos.
-
-Should reuse VideoCardParser.
-
----
-
-### Similar Creators
-
-Need parser.
-
----
-
-# Future Improvements
-
-CanvasChartParser
-
-Purpose
-
-Parse charts rendered entirely on HTML canvas.
-
-Would support
-
-- Followers Top 5 Locations
-- Future canvas-only charts
-
-Not required for MVP.
-
----
-
-# Known Limitations
-
-Followers Top 5 Locations
-
-Current Status
-
-Not Parsed
-
-Reason
-
-Rendered directly on HTML canvas.
-
-No DOM elements exist for
-
-- Labels
-- Percentages
-
-Would require canvas hover automation.
-
-Deferred intentionally.
-
----
-
-# Current Project Health
-
-Architecture Stable
-
-Reusable Components Stable
-
-Profile Extraction Stable
-
-Ready for Remaining Parsers
+```text
+/api/v1/oec/affiliate/creator/marketplace/profile
