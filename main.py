@@ -16,7 +16,6 @@ from profiles.profile_opener import ProfileOpener
 from profiles.profile_extractor import ProfileExtractor
 
 
-
 # ---------------------------------------------------------
 # Helper Methods
 # ---------------------------------------------------------
@@ -117,7 +116,9 @@ def main():
             campaign.max_creators
         )
 
-        print(f"\n✓ Extracted {len(search_results)} creators\n")
+        print(
+            f"\n✓ Extracted {len(search_results)} creators\n"
+        )
 
         # ----------------------------------------
         # AI Scoring
@@ -139,7 +140,9 @@ def main():
         # AI Ranking
         # ----------------------------------------
 
-        search_results = Ranker.rank(search_results)
+        search_results = Ranker.rank(
+            search_results
+        )
 
         # ----------------------------------------
         # Console Output
@@ -147,15 +150,26 @@ def main():
 
         print("\n===== Ranked Creators =====\n")
 
-        for index, result in enumerate(search_results, start=1):
+        for index, result in enumerate(
+            search_results,
+            start=1
+        ):
 
             creator = result.creator
 
-            print(f"{index}. {creator.username}")
-            print(f"   AI Score : {creator.ai_score}")
+            print(
+                f"{index}. {creator.username}"
+            )
+
+            print(
+                f"   AI Score : {creator.ai_score}"
+            )
 
             for reason in creator.ai_reasons:
-                print(f"   ✓ {reason}")
+
+                print(
+                    f"   ✓ {reason}"
+                )
 
         # ----------------------------------------
         # Export CSV
@@ -173,7 +187,10 @@ def main():
             campaign.keyword
         )
 
-        print("\n✓ CSV exported successfully:")
+        print(
+            "\n✓ CSV exported successfully:"
+        )
+
         print(csv_file)
 
         # ----------------------------------------
@@ -182,11 +199,19 @@ def main():
 
         opener = ProfileOpener(page)
 
-        print("\nOpening first creator...\n")
+        print(
+            "\nOpening first creator...\n"
+        )
+
+        result = search_results[0]
 
         profile_page = opener.open(
-             search_results[0]
+            result
         )
+
+        # ----------------------------------------
+        # Extract Detailed Creator Profile
+        # ----------------------------------------
 
         extractor = ProfileExtractor(
             profile_page,
@@ -194,6 +219,42 @@ def main():
         )
 
         profile = extractor.extract()
+
+        # ----------------------------------------
+        # Attach Profile To Creator
+        # ----------------------------------------
+
+        result.creator.profile = profile
+
+        print()
+        print("=" * 60)
+        print("ATTACHED CREATOR PROFILE")
+        print("=" * 60)
+
+        print("Creator:", result.creator.username)
+
+        print("Profile username:", result.creator.profile.header.username)
+
+        print("Profile GMV:", result.creator.profile.sales.total_gmv)
+
+        print("Profile followers:", result.creator.profile.header.followers)
+
+        print("Trend points:", len(
+            result.creator.profile.trends.gmv_trend or []
+        ))
+
+        print("Example videos:", len(
+            result.creator.profile.example_videos
+        ))
+
+        print("Product videos:", len(
+            result.creator.profile.product_videos
+        ))
+
+        print(
+            "\n✓ Detailed profile attached to creator."
+        )
+
         # ----------------------------------------
         # TEST VIDEO "View video on TikTok"
         # ----------------------------------------
@@ -212,15 +273,22 @@ def main():
             exact=True
         ).first
 
-        print("Button count:", button.count())
+        print(
+            "Button count:",
+            button.count()
+        )
 
         if button.count() == 0:
 
-            print("❌ View video on TikTok button not found")
+            print(
+                "❌ View video on TikTok button not found"
+            )
 
         else:
 
-            print("✓ View video on TikTok button found")
+            print(
+                "✓ View video on TikTok button found"
+            )
 
             try:
 
@@ -232,38 +300,60 @@ def main():
 
                 video_page = popup_info.value
 
-                print("✓ Popup opened")
+                print(
+                    "✓ Popup opened"
+                )
 
                 print()
                 print("Video URL:")
                 print(video_page.url)
+
                 video_page.close()
 
-                print("✓ Popup closed")
+                print(
+                    "✓ Popup closed"
+                )
 
             except Exception as ex:
 
                 print()
-                print("❌ No popup opened")
-                print(type(ex).__name__)
+                print(
+                    "❌ No popup opened"
+                )
+
+                print(
+                    type(ex).__name__
+                )
+
                 print(ex)
 
-
-
+        # ----------------------------------------
+        # Keep Browser Open For Debugging
+        # ----------------------------------------
 
         profile_page.pause()
 
     except Exception as ex:
 
-        print("\nERROR:")
-        print(type(ex).__name__)
+        print(
+            "\nERROR:"
+        )
+
+        print(
+            type(ex).__name__
+        )
+
         print(ex)
+
         raise
 
     finally:
 
         if DEBUG:
-            input("\nPress ENTER to close...")
+
+            input(
+                "\nPress ENTER to close..."
+            )
 
         browser.stop()
 

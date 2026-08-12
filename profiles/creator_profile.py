@@ -13,28 +13,38 @@ from profiles.models.video_card_info import VideoCardInfo
 @dataclass
 class CreatorProfile:
 
-    header: HeaderInfo = field(default_factory=HeaderInfo)
-
-    sales: SalesInfo = field(default_factory=SalesInfo)
-
-    collaboration: CollaborationInfo = field(default_factory=CollaborationInfo)
-
-    videos: VideoInfo = field(default_factory=VideoInfo)
-
-    live: LiveInfo = field(default_factory=LiveInfo)
-
-    followers: FollowersInfo = field(default_factory=FollowersInfo)
-
-    trends: TrendInfo = field(default_factory=TrendInfo)
-
-    example_videos: list[VideoCardInfo] = field(
-    default_factory=list
+    header: HeaderInfo = field(
+        default_factory=HeaderInfo
     )
 
-    product_videos: list[VideoCardInfo] = field(
+    sales: SalesInfo = field(
+        default_factory=SalesInfo
+    )
+
+    collaboration: CollaborationInfo = field(
+        default_factory=CollaborationInfo
+    )
+
+    videos: VideoInfo = field(
+        default_factory=VideoInfo
+    )
+
+    live: LiveInfo = field(
+        default_factory=LiveInfo
+    )
+
+    followers: FollowersInfo = field(
+        default_factory=FollowersInfo
+    )
+
+    trends: TrendInfo = field(
+        default_factory=TrendInfo
+    )
+
+    example_videos: list[VideoCardInfo] = field(
         default_factory=list
     )
 
     product_videos: list[VideoCardInfo] = field(
-    default_factory=list
+        default_factory=list
     )
