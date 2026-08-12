@@ -11,6 +11,8 @@ from config import DEBUG
 from ai.scorer import Scorer
 from ai.recommender import Recommender
 from ai.ranker import Ranker
+from ai.scoring_context import ScoringContext
+from ai.profile_scorer import ProfileScorer
 
 from profiles.profile_opener import ProfileOpener
 from profiles.profile_extractor import ProfileExtractor
@@ -122,6 +124,12 @@ def main():
 
         # ----------------------------------------
         # AI Scoring
+        #
+        # CURRENTLY UNCHANGED
+        #
+        # This is still the original scoring flow.
+        # We will move profile-aware scoring here
+        # later, after the profile pipeline is tested.
         # ----------------------------------------
 
         for result in search_results:
@@ -231,28 +239,137 @@ def main():
         print("ATTACHED CREATOR PROFILE")
         print("=" * 60)
 
-        print("Creator:", result.creator.username)
+        print(
+            "Creator:",
+            result.creator.username
+        )
 
-        print("Profile username:", result.creator.profile.header.username)
+        print(
+            "Profile username:",
+            result.creator.profile.header.username
+        )
 
-        print("Profile GMV:", result.creator.profile.sales.total_gmv)
+        print(
+            "Profile GMV:",
+            result.creator.profile.sales.total_gmv
+        )
 
-        print("Profile followers:", result.creator.profile.header.followers)
+        print(
+            "Profile followers:",
+            result.creator.profile.header.followers
+        )
 
-        print("Trend points:", len(
-            result.creator.profile.trends.gmv_trend or []
-        ))
+        print(
+            "Trend points:",
+            len(
+                result.creator.profile.trends.gmv_trend or []
+            )
+        )
 
-        print("Example videos:", len(
-            result.creator.profile.example_videos
-        ))
+        print(
+            "Example videos:",
+            len(
+                result.creator.profile.example_videos
+            )
+        )
 
-        print("Product videos:", len(
-            result.creator.profile.product_videos
-        ))
+        print(
+            "Product videos:",
+            len(
+                result.creator.profile.product_videos
+            )
+        )
 
         print(
             "\n✓ Detailed profile attached to creator."
+        )
+
+        # ----------------------------------------
+        # PROFILE SCORING TEST
+        # ----------------------------------------
+
+        context = ScoringContext.build(
+            result.creator,
+            campaign
+        )
+
+        profile_score = ProfileScorer.score(
+            context
+        )
+
+        print()
+        print("=" * 60)
+        print("PROFILE SCORING")
+        print("=" * 60)
+
+        print(
+            "Profile score:",
+            profile_score
+        )
+
+        # ----------------------------------------
+        # PROFILE SCORING SIGNALS
+        # ----------------------------------------
+
+        print()
+        print("=" * 60)
+        print("PROFILE SCORING SIGNALS")
+        print("=" * 60)
+
+        print(
+            "Example videos:",
+            context.profile_signals.example_video_count
+        )
+
+        print(
+            "Product videos:",
+            context.profile_signals.product_video_count
+        )
+
+        print(
+            "Video captions:",
+            context.profile_signals.video_captions
+        )
+
+        print(
+            "Product video captions:",
+            context.profile_signals.product_video_captions
+        )
+
+        print(
+            "Product video avg views:",
+            context.profile_signals.product_video_average_views
+        )
+
+        print(
+            "Product video avg likes:",
+            context.profile_signals.product_video_average_likes
+        )
+
+        print(
+            "Campaign category GMV %:",
+            context.profile_signals.campaign_category_gmv_percentage
+        )
+
+        print(
+            "Campaign content type sales %:",
+            context.profile_signals
+            .campaign_content_type_sales_percentage
+        )
+
+        print(
+            "Brand collaborations:",
+            context.profile_signals.brand_collaborations
+        )
+
+        print(
+            "Products:",
+            context.profile_signals.products
+        )
+
+        print(
+            "Average commission:",
+            context.profile_signals.average_commission_rate
         )
 
         # ----------------------------------------
