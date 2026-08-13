@@ -1,3 +1,5 @@
+from pprint import pprint
+
 from browser_manager import BrowserManager
 from navigator import Navigator
 from discovery_panel import DiscoveryPanel
@@ -13,14 +15,15 @@ from ai.recommender import Recommender
 from ai.ranker import Ranker
 from ai.scoring_context import ScoringContext
 from ai.profile_scorer import ProfileScorer
+from ai.content_relevance import ContentRelevance
 
 from profiles.profile_opener import ProfileOpener
 from profiles.profile_extractor import ProfileExtractor
 
 
-# ---------------------------------------------------------
+# =========================================================
 # Helper Methods
-# ---------------------------------------------------------
+# =========================================================
 
 def print_profile(profile):
 
@@ -29,42 +32,104 @@ def print_profile(profile):
     print("HEADER DATA")
     print("=" * 60)
 
-    print("Username     :", profile.header.username)
-    print("Display Name :", profile.header.display_name)
-    print("Rating       :", profile.header.rating)
-    print("Reviews      :", profile.header.review_count)
-    print("Categories   :", profile.header.categories)
-    print("Followers    :", profile.header.followers)
-    print("MCN          :", profile.header.mcn)
-    print("Email        :", profile.header.email)
-    print("Website      :", profile.header.website)
+    print(
+        "Username     :",
+        profile.header.username
+    )
+
+    print(
+        "Display Name :",
+        profile.header.display_name
+    )
+
+    print(
+        "Rating       :",
+        profile.header.rating
+    )
+
+    print(
+        "Reviews      :",
+        profile.header.review_count
+    )
+
+    print(
+        "Categories   :",
+        profile.header.categories
+    )
+
+    print(
+        "Followers    :",
+        profile.header.followers
+    )
+
+    print(
+        "MCN          :",
+        profile.header.mcn
+    )
+
+    print(
+        "Email        :",
+        profile.header.email
+    )
+
+    print(
+        "Website      :",
+        profile.header.website
+    )
 
     print()
+
     print("Bio:")
-    print(profile.header.bio)
+    print(
+        profile.header.bio
+    )
 
     print()
     print("=" * 60)
     print("SALES DATA")
     print("=" * 60)
 
-    print("GMV                  :", profile.sales.total_gmv)
-    print("Items Sold           :", profile.sales.items_sold)
-    print("GPM                  :", profile.sales.gpm)
-    print("GMV / Customer       :", profile.sales.gmv_per_customer)
+    print(
+        "Report Period        :",
+        profile.sales.report_period
+    )
+
+    print(
+        "GMV                  :",
+        profile.sales.total_gmv
+    )
+
+    print(
+        "Items Sold           :",
+        profile.sales.items_sold
+    )
+
+    print(
+        "GPM                  :",
+        profile.sales.gpm
+    )
+
+    print(
+        "GMV / Customer       :",
+        profile.sales.gmv_per_customer
+    )
 
     print()
     print("Sales Channels")
-    print(profile.sales.sales_channel_distribution)
+    print(
+        profile.sales.sales_channel_distribution
+    )
 
     print()
     print("Category Distribution")
-    print(profile.sales.category_distribution)
+    print(
+        profile.sales.category_distribution
+    )
 
 
-# ---------------------------------------------------------
+# =========================================================
 # Main
-# ---------------------------------------------------------
+# =========================================================
 
 def main():
 
@@ -83,54 +148,65 @@ def main():
     print(campaign)
 
     browser = BrowserManager()
+
     page = browser.start()
 
     try:
 
-        # ----------------------------------------
+        # =================================================
         # Navigation
-        # ----------------------------------------
+        # =================================================
 
-        navigator = Navigator(page)
+        navigator = Navigator(
+            page
+        )
+
         navigator.open_discover_creators()
 
-        # ----------------------------------------
+        # =================================================
         # Apply Filters
-        # ----------------------------------------
+        # =================================================
 
-        discovery_panel = DiscoveryPanel(page)
-        discovery_panel.apply_filters(campaign)
+        discovery_panel = DiscoveryPanel(
+            page
+        )
 
-        # ----------------------------------------
+        discovery_panel.apply_filters(
+            campaign
+        )
+
+        # =================================================
         # Search
-        # ----------------------------------------
+        # =================================================
 
-        creator_search = CreatorSearch(page)
-        creator_search.search(campaign.keyword)
+        creator_search = CreatorSearch(
+            page
+        )
 
-        # ----------------------------------------
+        creator_search.search(
+            campaign.keyword
+        )
+
+        # =================================================
         # Collect Creators
-        # ----------------------------------------
+        # =================================================
 
-        collector = CreatorCollector(page)
+        collector = CreatorCollector(
+            page
+        )
 
         search_results = collector.collect(
             campaign.max_creators
         )
 
         print(
-            f"\n✓ Extracted {len(search_results)} creators\n"
+            f"\n✓ Extracted "
+            f"{len(search_results)} creators\n"
         )
 
-        # ----------------------------------------
-        # AI Scoring
-        #
-        # CURRENTLY UNCHANGED
-        #
-        # This is still the original scoring flow.
-        # We will move profile-aware scoring here
-        # later, after the profile pipeline is tested.
-        # ----------------------------------------
+        # =================================================
+        # Basic Scoring
+        # =================================================
 
         for result in search_results:
 
@@ -144,19 +220,21 @@ def main():
                 campaign
             )
 
-        # ----------------------------------------
-        # AI Ranking
-        # ----------------------------------------
+        # =================================================
+        # Basic Ranking
+        # =================================================
 
         search_results = Ranker.rank(
             search_results
         )
 
-        # ----------------------------------------
+        # =================================================
         # Console Output
-        # ----------------------------------------
+        # =================================================
 
-        print("\n===== Ranked Creators =====\n")
+        print(
+            "\n===== Ranked Creators =====\n"
+        )
 
         for index, result in enumerate(
             search_results,
@@ -166,11 +244,13 @@ def main():
             creator = result.creator
 
             print(
-                f"{index}. {creator.username}"
+                f"{index}. "
+                f"{creator.username}"
             )
 
             print(
-                f"   AI Score : {creator.ai_score}"
+                f"   AI Score : "
+                f"{creator.ai_score}"
             )
 
             for reason in creator.ai_reasons:
@@ -179,9 +259,9 @@ def main():
                     f"   ✓ {reason}"
                 )
 
-        # ----------------------------------------
+        # =================================================
         # Export CSV
-        # ----------------------------------------
+        # =================================================
 
         creators = [
             result.creator
@@ -199,13 +279,19 @@ def main():
             "\n✓ CSV exported successfully:"
         )
 
-        print(csv_file)
+        print(
+            csv_file
+        )
 
-        # ----------------------------------------
+        # =================================================
         # TESTING ONLY
-        # ----------------------------------------
+        #
+        # Open first creator profile
+        # =================================================
 
-        opener = ProfileOpener(page)
+        opener = ProfileOpener(
+            page
+        )
 
         print(
             "\nOpening first creator...\n"
@@ -217,9 +303,9 @@ def main():
             result
         )
 
-        # ----------------------------------------
+        # =================================================
         # Extract Detailed Creator Profile
-        # ----------------------------------------
+        # =================================================
 
         extractor = ProfileExtractor(
             profile_page,
@@ -228,9 +314,9 @@ def main():
 
         profile = extractor.extract()
 
-        # ----------------------------------------
+        # =================================================
         # Attach Profile To Creator
-        # ----------------------------------------
+        # =================================================
 
         result.creator.profile = profile
 
@@ -260,6 +346,11 @@ def main():
         )
 
         print(
+            "Report period:",
+            result.creator.profile.sales.report_period
+        )
+
+        print(
             "Trend points:",
             len(
                 result.creator.profile.trends.gmv_trend or []
@@ -284,97 +375,387 @@ def main():
             "\n✓ Detailed profile attached to creator."
         )
 
-        # ----------------------------------------
-        # PROFILE SCORING TEST
-        # ----------------------------------------
+        # =================================================
+        # Build Profile Scoring Context
+        # =================================================
 
         context = ScoringContext.build(
             result.creator,
             campaign
         )
 
+        # =================================================
+        # Deterministic Profile Score
+        # =================================================
+
         profile_score = ProfileScorer.score(
             context
         )
 
-        print()
-        print("=" * 60)
-        print("PROFILE SCORING")
-        print("=" * 60)
-
         print(
-            "Profile score:",
-            profile_score
+            f"\nProfile score: "
+            f"{profile_score}"
         )
 
-        # ----------------------------------------
+        # =================================================
         # PROFILE SCORING SIGNALS
-        # ----------------------------------------
+        # =================================================
+
+        signals = (
+            context.profile_signals
+        )
 
         print()
         print("=" * 60)
         print("PROFILE SCORING SIGNALS")
         print("=" * 60)
 
+        # -----------------------------------------
+        # Video content
+        # -----------------------------------------
+
         print(
             "Example videos:",
-            context.profile_signals.example_video_count
+            signals.example_video_count
         )
 
         print(
             "Product videos:",
-            context.profile_signals.product_video_count
+            signals.product_video_count
+        )
+
+        print(
+            "Product videos with products:",
+            signals.product_video_count_with_products
         )
 
         print(
             "Video captions:",
-            context.profile_signals.video_captions
+            signals.video_captions
         )
 
         print(
             "Product video captions:",
-            context.profile_signals.product_video_captions
+            signals.product_video_captions
         )
 
         print(
             "Product video avg views:",
-            context.profile_signals.product_video_average_views
+            signals.product_video_average_views
         )
 
         print(
             "Product video avg likes:",
-            context.profile_signals.product_video_average_likes
+            signals.product_video_average_likes
+        )
+
+        # -----------------------------------------
+        # Activity
+        # -----------------------------------------
+
+        print(
+            "Latest video age (days):",
+            signals.latest_video_age_days
         )
 
         print(
+            "Videos in last 30 days:",
+            signals.videos_last_30_days
+        )
+
+        # -----------------------------------------
+        # View consistency
+        # -----------------------------------------
+
+        print(
+            "Video view consistency:",
+            signals.video_view_consistency
+        )
+
+        print(
+            "Product video view consistency:",
+            signals.product_video_view_consistency
+        )
+
+        # -----------------------------------------
+        # Engagement
+        # -----------------------------------------
+
+        print(
+            "Average video like rate:",
+            signals.average_video_like_rate
+        )
+
+        print(
+            "Product video like rate:",
+            signals.product_video_like_rate
+        )
+
+        # -----------------------------------------
+        # Posting consistency
+        # -----------------------------------------
+
+        print(
+            "Average days between videos:",
+            signals.average_days_between_videos
+        )
+
+        print(
+            "Posting consistency:",
+            signals.posting_consistency
+        )
+
+        # =================================================
+        # HISTORICAL TREND SIGNALS
+        # =================================================
+
+        print()
+        print("=" * 60)
+        print("HISTORICAL TREND SIGNALS")
+        print("=" * 60)
+
+        print(
+            "Average GMV:",
+            signals.average_gmv
+        )
+
+        print(
+            "Median GMV:",
+            signals.median_gmv
+        )
+
+        print(
+            "GMV consistency:",
+            signals.gmv_consistency
+        )
+
+        print(
+            "GMV periods above £1K:",
+            signals.gmv_periods_above_1000
+        )
+
+        print(
+            "GMV periods above £2K:",
+            signals.gmv_periods_above_2000
+        )
+
+        print(
+            "Average units sold:",
+            signals.average_units_sold
+        )
+
+        print(
+            "Median units sold:",
+            signals.median_units_sold
+        )
+
+        print(
+            "Average trend video views:",
+            signals.average_trend_video_views
+        )
+
+        print(
+            "Median trend video views:",
+            signals.median_trend_video_views
+        )
+
+        print(
+            "Follower growth:",
+            signals.follower_growth
+        )
+
+        print(
+            "GMV momentum:",
+            signals.gmv_momentum
+        )
+
+        print(
+            "Sales momentum:",
+            signals.sales_momentum
+        )
+
+        print(
+            "Video views momentum:",
+            signals.video_views_momentum
+        )
+
+        # =================================================
+        # CAMPAIGN FIT
+        # =================================================
+
+        print()
+        print("=" * 60)
+        print("CAMPAIGN FIT SIGNALS")
+        print("=" * 60)
+
+        print(
             "Campaign category GMV %:",
-            context.profile_signals.campaign_category_gmv_percentage
+            signals.campaign_category_gmv_percentage
         )
 
         print(
             "Campaign content type sales %:",
-            context.profile_signals
-            .campaign_content_type_sales_percentage
+            signals.campaign_content_type_sales_percentage
         )
+
+        # =================================================
+        # COLLABORATION
+        # =================================================
+
+        print()
+        print("=" * 60)
+        print("COLLABORATION SIGNALS")
+        print("=" * 60)
 
         print(
             "Brand collaborations:",
-            context.profile_signals.brand_collaborations
+            signals.brand_collaborations
         )
 
         print(
             "Products:",
-            context.profile_signals.products
+            signals.products
         )
 
         print(
             "Average commission:",
-            context.profile_signals.average_commission_rate
+            signals.average_commission_rate
         )
 
-        # ----------------------------------------
-        # TEST VIDEO "View video on TikTok"
-        # ----------------------------------------
+        # =================================================
+        # GEMINI CONTENT RELEVANCE
+        # =================================================
+
+        print()
+        print("=" * 60)
+        print("GEMINI CONTENT RELEVANCE")
+        print("=" * 60)
+
+        print(
+            "Analyzing creator content with Gemini..."
+        )
+
+        content_relevance = ContentRelevance()
+
+        relevance_result = (
+            content_relevance.analyze(
+                context
+            )
+        )
+
+        print()
+        print(
+            "Gemini relevance result:"
+        )
+
+        pprint(
+            relevance_result
+        )
+
+        # =================================================
+        # Individual Gemini Signals
+        # =================================================
+
+        print()
+
+        print(
+            "Content relevance score:",
+            relevance_result.get(
+                "relevance_score"
+            )
+        )
+
+        print(
+            "Campaign match:",
+            relevance_result.get(
+                "campaign_match"
+            )
+        )
+
+        print(
+            "Confidence:",
+            relevance_result.get(
+                "confidence"
+            )
+        )
+
+        print(
+            "Matched topics:",
+            relevance_result.get(
+                "matched_topics"
+            )
+        )
+
+        print(
+            "Missing topics:",
+            relevance_result.get(
+                "missing_topics"
+            )
+        )
+
+        print()
+
+        print(
+            "Reasons:"
+        )
+
+        for reason in (
+            relevance_result.get(
+                "reasons",
+                []
+            )
+        ):
+
+            print(
+                f"  ✓ {reason}"
+            )
+
+        # =================================================
+        # IMPORTANT
+        #
+        # We are NOT combining the Gemini score with
+        # ProfileScore yet.
+        # =================================================
+
+        print()
+        print(
+            "Profile score:",
+            profile_score
+        )
+
+        print(
+            "Gemini content score:",
+            relevance_result.get(
+                "relevance_score"
+            )
+        )
+
+        print(
+            "Final score: NOT CALCULATED YET"
+        )
+
+        # =================================================
+        # AI CONTENT RELEVANCE INPUT
+        # =================================================
+
+        print()
+        print("=" * 60)
+        print("AI CONTENT RELEVANCE PROMPT")
+        print("=" * 60)
+
+        prompt = (
+            ContentRelevance.build_prompt(
+                context
+            )
+        )
+
+        print(
+            prompt
+        )
+
+        # =================================================
+        # TEST VIDEO BUTTON
+        # =================================================
 
         print()
         print("=" * 60)
@@ -422,8 +803,13 @@ def main():
                 )
 
                 print()
-                print("Video URL:")
-                print(video_page.url)
+                print(
+                    "Video URL:"
+                )
+
+                print(
+                    video_page.url
+                )
 
                 video_page.close()
 
@@ -442,11 +828,13 @@ def main():
                     type(ex).__name__
                 )
 
-                print(ex)
+                print(
+                    ex
+                )
 
-        # ----------------------------------------
+        # =================================================
         # Keep Browser Open For Debugging
-        # ----------------------------------------
+        # =================================================
 
         profile_page.pause()
 
@@ -460,7 +848,9 @@ def main():
             type(ex).__name__
         )
 
-        print(ex)
+        print(
+            ex
+        )
 
         raise
 
@@ -474,6 +864,10 @@ def main():
 
         browser.stop()
 
+
+# =========================================================
+# Entry Point
+# =========================================================
 
 if __name__ == "__main__":
     main()
